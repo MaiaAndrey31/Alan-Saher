@@ -28,7 +28,6 @@ export function Hero({ hero, site }: HeroProps) {
   const prefersReducedMotion = usePrefersReducedMotion();
   const isDesktop = useMediaQuery("(min-width: 1024px) and (hover: hover) and (pointer: fine)");
   const [sectionRef, isInView] = useInView<HTMLElement>({ threshold: 0 });
-  const introRef = useRef<HTMLDivElement>(null);
   const hasPlayedRef = useRef(false);
 
   const backgroundUrl = hero.backgroundUrl ?? PLACEHOLDER;
@@ -45,7 +44,7 @@ export function Hero({ hero, site }: HeroProps) {
 
   useGSAP(
     () => {
-      if (!isReady || hasPlayedRef.current || !introRef.current) return;
+      if (!isReady || hasPlayedRef.current || !sectionRef.current) return;
       hasPlayedRef.current = true;
 
       // .hero-frame holds the real LCP <Image> — it must stay visible (opacity)
@@ -58,14 +57,14 @@ export function Hero({ hero, site }: HeroProps) {
         .fromTo(".hero-cta", { autoAlpha: 0, y: 12 }, { autoAlpha: 1, y: 0, duration: 0.6, stagger: 0.08 }, "-=0.4")
         .fromTo(".hero-scroll-cue", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.6 }, "-=0.2");
     },
-    { scope: introRef, dependencies: [isReady] }
+    { scope: sectionRef, dependencies: [isReady] }
   );
 
   useEffect(() => {
-    if (prefersReducedMotion && introRef.current) {
+    if (prefersReducedMotion && sectionRef.current) {
       gsap.set(".hero-frame, .hero-line, .hero-sub, .hero-cta, .hero-scroll-cue", { autoAlpha: 1, yPercent: 0, y: 0, scale: 1 });
     }
-  }, [prefersReducedMotion]);
+  }, [prefersReducedMotion, sectionRef]);
 
   return (
     <section
@@ -73,7 +72,7 @@ export function Hero({ hero, site }: HeroProps) {
       ref={sectionRef}
       className="relative flex h-[100svh] min-h-[640px] w-full items-end overflow-hidden bg-bg"
     >
-      <div ref={introRef} className="absolute inset-0">
+      <div className="absolute inset-0">
         <div className="hero-frame absolute inset-0">
           <Image
             src={backgroundUrl}

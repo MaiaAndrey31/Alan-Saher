@@ -29,6 +29,8 @@ export interface CreateUploadTicketInput {
 export interface StorageProvider {
   createUploadTicket(input: CreateUploadTicketInput): Promise<UploadTicket>;
   head(path: string): Promise<HeadResult>;
+  /** Reads just the first `maxBytes` of the object — used for server-side magic-byte sniffing, never a full download. */
+  readHeadBytes(path: string, maxBytes: number): Promise<Buffer | null>;
   getPublicUrl(path: string): string;
   delete(paths: string[]): Promise<void>;
 }

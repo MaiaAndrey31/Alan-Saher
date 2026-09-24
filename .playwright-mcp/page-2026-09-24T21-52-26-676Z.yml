@@ -1,0 +1,71 @@
+- generic [active] [ref=f14e1]:
+  - generic [ref=f14e3]:
+    - complementary [ref=f14e4]:
+      - link "Alan Saher · Studio" [ref=f14e5] [cursor=pointer]:
+        - /url: /admin
+      - navigation [ref=f14e6]:
+        - list [ref=f14e8]:
+          - listitem [ref=f14e9]:
+            - link "Dashboard" [ref=f14e10] [cursor=pointer]:
+              - /url: /admin
+        - generic [ref=f14e11]:
+          - paragraph [ref=f14e12]: Conteúdo
+          - list [ref=f14e13]:
+            - listitem [ref=f14e14]:
+              - link "Agenda" [ref=f14e15] [cursor=pointer]:
+                - /url: /admin/shows
+            - listitem [ref=f14e16]:
+              - link "Galeria" [ref=f14e17] [cursor=pointer]:
+                - /url: /admin/gallery
+            - listitem [ref=f14e18]:
+              - link "Biblioteca de mídia" [ref=f14e19] [cursor=pointer]:
+                - /url: /admin/media
+            - listitem [ref=f14e20]:
+              - link "Música" [ref=f14e21] [cursor=pointer]:
+                - /url: /admin/releases
+            - listitem [ref=f14e22]:
+              - link "Imprensa" [ref=f14e23] [cursor=pointer]:
+                - /url: /admin/press
+            - listitem [ref=f14e24]:
+              - link "Carreira" [ref=f14e25] [cursor=pointer]:
+                - /url: /admin/career
+            - listitem [ref=f14e26]:
+              - link "Página inicial" [ref=f14e27] [cursor=pointer]:
+                - /url: /admin/homepage
+        - generic [ref=f14e28]:
+          - paragraph [ref=f14e29]: Configurações
+          - list [ref=f14e30]:
+            - listitem [ref=f14e31]:
+              - link "Booking" [ref=f14e32] [cursor=pointer]:
+                - /url: /admin/booking
+            - listitem [ref=f14e33]:
+              - link "SEO" [ref=f14e34] [cursor=pointer]:
+                - /url: /admin/seo
+            - listitem [ref=f14e35]:
+              - link "Ajustes" [ref=f14e36] [cursor=pointer]:
+                - /url: /admin/settings
+      - generic [ref=f14e37]:
+        - paragraph [ref=f14e38]: admin@example.com
+        - button "Sair" [ref=f14e40]
+    - main [ref=f14e42]:
+      - generic [ref=f14e103]:
+        - generic [ref=f14e104]:
+          - heading "Agenda" [level=1] [ref=f14e105]
+          - link "+ Novo show" [ref=f14e106] [cursor=pointer]:
+            - /url: /admin/shows/new
+        - generic [ref=f14e107]:
+          - link "Próximos" [ref=f14e108] [cursor=pointer]:
+            - /url: /admin/shows
+          - link "Passados" [ref=f14e109] [cursor=pointer]:
+            - /url: /admin/shows?tab=past
+        - list [ref=f14e110]:
+          - listitem [ref=f14e111]:
+            - generic [ref=f14e112]:
+              - paragraph [ref=f14e113]: 30 de dez. de 2026 · Alfenas · Arena Central
+              - generic [ref=f14e114]: Publicado
+            - generic [ref=f14e116]:
+              - link "Editar" [ref=f14e117] [cursor=pointer]:
+                - /url: /admin/shows/cmug2i4bw0000r0spesmzy2yq/edit
+              - button "Excluir" [ref=f14e118]
+  - button "Open Next.js Dev Tools" [ref=f14e98] [cursor=pointer]
+  - alert [ref=f14e102]: Agenda

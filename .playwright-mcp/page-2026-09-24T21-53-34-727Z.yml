@@ -1,0 +1,185 @@
+- generic [active] [ref=f18e1]:
+  - generic [ref=f18e2]:
+    - link "Skip to content" [ref=f18e3] [cursor=pointer]:
+      - /url: "#main-content"
+    - status "Loading" [ref=f18e4]:
+      - generic [ref=f18e5]: AS
+    - banner [ref=f18e8]:
+      - generic [ref=f18e9]:
+        - link "Alan Saher" [ref=f18e10] [cursor=pointer]:
+          - /url: "#top"
+        - navigation "Primary" [ref=f18e11]:
+          - button "Story" [ref=f18e12]
+          - button "Music" [ref=f18e13]
+          - button "Shows" [ref=f18e14]
+          - button "Gallery" [ref=f18e15]
+          - button "Booking" [ref=f18e16]
+    - main [ref=f18e17]:
+      - generic [ref=f18e18]:
+        - img "Alan Saher performing on stage" [ref=f18e21]
+        - generic [ref=f18e23]:
+          - paragraph [ref=f18e24]: DJ · Producer · Entertainer
+          - heading "Alan Saher" [level=1] [ref=f18e25]:
+            - generic [ref=f18e26]: Alan
+            - generic [ref=f18e28]: Saher
+          - generic [ref=f18e30]:
+            - button "Explore" [ref=f18e32]
+            - button "Booking" [ref=f18e35]
+        - generic [ref=f18e37]: Scroll
+      - region "Statement" [ref=f18e40]:
+        - heading "From Minas to the World." [level=2] [ref=f18e42]:
+          - generic [ref=f18e43]: From Minas
+          - generic [ref=f18e44]: to the
+          - generic [ref=f18e45]: World.
+      - region "Numbers" [ref=f18e46]:
+        - generic [ref=f18e47]:
+          - heading "33+ years, performances across major world stages since 1993." [level=2] [ref=f18e48]
+          - list [ref=f18e51]:
+            - listitem [ref=f18e52]
+            - listitem [ref=f18e53]
+            - listitem [ref=f18e54]
+            - listitem [ref=f18e55]
+      - region "The Story" [ref=f18e56]:
+        - generic [ref=f18e57]:
+          - text: The Story
+          - heading "30+ years, one journey." [level=2] [ref=f18e58]
+          - list [ref=f18e59]:
+            - listitem [ref=f18e60]
+            - listitem [ref=f18e61]
+            - listitem [ref=f18e62]
+            - listitem [ref=f18e63]
+            - listitem [ref=f18e64]
+            - listitem [ref=f18e65]
+            - listitem [ref=f18e66]
+            - listitem [ref=f18e67]
+      - region "World Stages" [ref=f18e68]:
+        - heading "World Stages" [level=2] [ref=f18e70]
+        - generic [ref=f18e71]:
+          - generic [ref=f18e72]:
+            - img "World Cup — Brazil — Mineirão" [ref=f18e74]
+            - generic [ref=f18e76]:
+              - generic [ref=f18e77]: "2014"
+              - heading "World Cup" [level=3] [ref=f18e78]
+              - paragraph [ref=f18e79]: Brazil — Mineirão
+          - generic [ref=f18e80]:
+            - img "Olympic Games — Rio de Janeiro" [ref=f18e82]
+            - generic [ref=f18e84]:
+              - generic [ref=f18e85]: "2016"
+              - heading "Olympic Games" [level=3] [ref=f18e86]
+              - paragraph [ref=f18e87]: Rio de Janeiro
+          - generic [ref=f18e88]:
+            - img "World Cup — Russia" [ref=f18e90]
+            - generic [ref=f18e92]:
+              - generic [ref=f18e93]: "2018"
+              - heading "World Cup" [level=3] [ref=f18e94]
+              - paragraph [ref=f18e95]: Russia
+          - generic [ref=f18e96]:
+            - img "Copa América — South America" [ref=f18e98]
+            - generic [ref=f18e100]:
+              - generic [ref=f18e101]: "2019"
+              - heading "Copa América" [level=3] [ref=f18e102]
+              - paragraph [ref=f18e103]: South America
+      - region "From stage to stage" [ref=f18e104]:
+        - generic [ref=f18e108]:
+          - paragraph [ref=f18e109]: The stage changes.
+          - paragraph [ref=f18e110]: The crowd changes.
+          - paragraph [ref=f18e111]: The country changes.
+          - paragraph [ref=f18e112]: The energy doesn't.
+          - paragraph [ref=f18e114]: Alan Saher
+      - region "The Experience" [ref=f18e115]:
+        - generic [ref=f18e117]:
+          - img "Crowd energy under stage lights" [ref=f18e120]
+          - img "Alan Saher behind the decks" [ref=f18e123]
+          - img "Backstage moment before a show" [ref=f18e126]
+          - img "Stage lighting rig at full scale" [ref=f18e129]
+      - region "Music" [ref=f18e130]:
+        - generic [ref=f18e132]:
+          - paragraph [ref=f18e133]: Releases are on their way here. In the meantime, follow Alan Saher on streaming platforms.
+          - generic [ref=f18e134]:
+            - link "Spotify — coming soon" [disabled] [ref=f18e136]:
+              - /url: "#"
+            - link "Apple Music — coming soon" [disabled] [ref=f18e138]:
+              - /url: "#"
+      - region "Gallery" [ref=f18e139]:
+        - generic [ref=f18e141]:
+          - button "View Alan Saher — placeholder photo 1" [ref=f18e142]:
+            - img "Alan Saher — placeholder photo 1" [ref=f18e143]
+            - generic: "01"
+          - button "View Alan Saher — placeholder photo 2" [ref=f18e144]:
+            - img "Alan Saher — placeholder photo 2" [ref=f18e145]
+            - generic: "02"
+          - button "View Alan Saher — placeholder photo 3" [ref=f18e146]:
+            - img "Alan Saher — placeholder photo 3" [ref=f18e147]
+            - generic: "03"
+          - button "View Alan Saher — placeholder photo 4" [ref=f18e148]:
+            - img "Alan Saher — placeholder photo 4" [ref=f18e149]
+            - generic: "04"
+          - button "View Alan Saher — placeholder photo 5" [ref=f18e150]:
+            - img "Alan Saher — placeholder photo 5" [ref=f18e151]
+            - generic: "05"
+          - button "View Alan Saher — placeholder photo 6" [ref=f18e152]:
+            - img "Alan Saher — placeholder photo 6" [ref=f18e153]
+            - generic: "06"
+          - button "View Alan Saher — placeholder photo 7" [ref=f18e154]:
+            - img "Alan Saher — placeholder photo 7" [ref=f18e155]
+            - generic: "07"
+          - button "View Alan Saher — placeholder photo 8" [ref=f18e156]:
+            - img "Alan Saher — placeholder photo 8" [ref=f18e157]
+            - generic: "08"
+      - region "Press" [ref=f18e158]:
+        - paragraph [ref=f18e160]: Press coverage will be featured here as it is published.
+      - region "Press Kit" [ref=f18e161]
+      - region "Upcoming Shows" [ref=f18e164]:
+        - list [ref=f18e166]:
+          - listitem [ref=f18e167]:
+            - generic [ref=f18e169]:
+              - generic [ref=f18e170]: Dec 31, 2026
+              - generic [ref=f18e171]: Alfenas
+              - generic [ref=f18e172]: Arena Central, Brasil
+      - region "Booking" [ref=f18e173]:
+        - generic [ref=f18e176]:
+          - textbox [ref=f18e178]
+          - generic [ref=f18e179]:
+            - generic [ref=f18e180]: Name *
+            - textbox "Name" [ref=f18e181]
+          - generic [ref=f18e182]:
+            - generic [ref=f18e183]: Company
+            - textbox "Company" [ref=f18e184]
+          - generic [ref=f18e185]:
+            - generic [ref=f18e186]: WhatsApp *
+            - textbox "WhatsApp" [ref=f18e187]
+          - generic [ref=f18e188]:
+            - generic [ref=f18e189]: Email *
+            - textbox "Email" [ref=f18e190]
+          - generic [ref=f18e191]:
+            - generic [ref=f18e192]: City *
+            - textbox "City" [ref=f18e193]
+          - generic [ref=f18e194]:
+            - generic [ref=f18e195]: Event type *
+            - textbox "Event type" [ref=f18e196]
+          - generic [ref=f18e197]:
+            - generic [ref=f18e198]: Event date
+            - textbox "Event date" [ref=f18e199]
+          - generic [ref=f18e200]:
+            - generic [ref=f18e201]: Message
+            - textbox "Message" [ref=f18e202]
+          - button "Request Booking" [ref=f18e205]
+    - contentinfo [ref=f18e206]:
+      - generic [ref=f18e207]:
+        - generic [ref=f18e208]:
+          - generic [ref=f18e209]:
+            - paragraph [ref=f18e210]: DJ · Producer · Entertainer
+            - paragraph [ref=f18e211]: Alan Saher
+          - navigation "Social" [ref=f18e212]:
+            - link "Instagram" [disabled] [ref=f18e213] [cursor=pointer]:
+              - /url: "#"
+            - link "Spotify" [disabled] [ref=f18e214] [cursor=pointer]:
+              - /url: "#"
+            - link "Apple Music" [disabled] [ref=f18e215] [cursor=pointer]:
+              - /url: "#"
+          - button "Booking" [ref=f18e216]
+        - generic [ref=f18e217]:
+          - generic [ref=f18e218]: © 2026 Alan Saher. All rights reserved.
+          - generic [ref=f18e219]: Built as a digital experience — not a template.
+      - generic [aria-hidden]: Alan Saher
+  - button "Open Next.js Dev Tools" [ref=f18e225] [cursor=pointer]

@@ -30,14 +30,13 @@ export async function registerUploadedMedia(input: unknown): Promise<ActionResul
 
   // Sniff real magic bytes from the uploaded object — a spoofed
   // Content-Type header on the original PUT request is never trusted.
-  const publicUrl = storage.getPublicUrl(path);
-  const rangeResponse = await fetch(publicUrl, { headers: { Range: "bytes=0-4100" } }).catch(() => null);
-  if (!rangeResponse || !rangeResponse.ok) {
+  const buffer = await storage.readHeadBytes(path, 4100);
+  if (!buffer) {
     await storage.delete([path]);
     return { ok: false, error: "Não foi possível validar o arquivo enviado." };
   }
-  const buffer = Buffer.from(await rangeResponse.arrayBuffer());
   const sniffed = await fileTypeFromBuffer(buffer);
+  const publicUrl = storage.getPublicUrl(path);
 
   if (!sniffed || !ALLOWED_IMAGE_MIME_TYPES.includes(sniffed.mime as (typeof ALLOWED_IMAGE_MIME_TYPES)[number])) {
     await storage.delete([path]);

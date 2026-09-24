@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { Fraunces, Inter } from "next/font/google";
 import "./globals.css";
 
@@ -22,7 +23,7 @@ const inter = Inter({
  * `(site)/layout.tsx` and `(admin)/layout.tsx`, so neither ever inherits the
  * other's styling or JS.
  */
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" className={`${fraunces.variable} ${inter.variable} h-full`} suppressHydrationWarning>
       <body className="min-h-full antialiased" suppressHydrationWarning>

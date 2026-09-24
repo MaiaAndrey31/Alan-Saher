@@ -1,6 +1,8 @@
 import "server-only";
 import { PrismaPg } from "@prisma/adapter-pg";
-import { PrismaClient } from "@/generated/prisma/client";
+// Relative (not the `@/` alias) so this file resolves identically under
+// Next's bundler and under `tsx` running prisma/seed.ts outside Next.
+import { PrismaClient } from "../generated/prisma/client";
 
 /**
  * Runtime Prisma client — always the pooled Supabase connection (port 6543,

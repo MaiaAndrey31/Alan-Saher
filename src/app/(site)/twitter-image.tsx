@@ -4,6 +4,11 @@ import { getSiteSettings } from "@/lib/content/site";
 export const alt = "Alan Saher — The Experience";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
+// CMS-driven (reads SiteSettings) — must not be frozen at build time, or an
+// admin-edited artist name/tagline would only appear in shared links after
+// the next deploy. The underlying getSiteSettings() call is still cached
+// (see src/lib/content/site.ts), so this stays cheap.
+export const dynamic = "force-dynamic";
 
 export default async function Image() {
   const site = await getSiteSettings();

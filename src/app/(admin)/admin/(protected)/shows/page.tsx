@@ -3,6 +3,7 @@ import { prisma } from "@/lib/db";
 import { StatusBadge } from "@/components/admin/fields";
 import { DeleteButton } from "@/components/admin/DeleteButton";
 import { deleteShowAction } from "@/app/(admin)/admin/_actions/shows";
+import { formatDateOnly } from "@/lib/formatDate";
 
 function startOfTodayUTC() {
   const now = new Date();
@@ -53,7 +54,7 @@ export default async function ShowsPage({ searchParams }: { searchParams: Promis
             <li key={show.id} className="flex flex-col gap-2 py-4 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <p className="text-sm font-medium">
-                  {new Intl.DateTimeFormat("pt-BR", { day: "2-digit", month: "short", year: "numeric" }).format(show.date)}
+                  {formatDateOnly(show.date)}
                   {" · "}
                   {show.city}
                   {show.venue ? ` · ${show.venue}` : ""}
@@ -69,7 +70,7 @@ export default async function ShowsPage({ searchParams }: { searchParams: Promis
                 </Link>
                 <DeleteButton
                   action={deleteShowAction.bind(null, show.id)}
-                  confirmMessage={`Excluir o show em ${show.city} — ${new Intl.DateTimeFormat("pt-BR").format(show.date)}?`}
+                  confirmMessage={`Excluir o show em ${show.city} — ${formatDateOnly(show.date)}?`}
                 />
               </div>
             </li>

@@ -1,0 +1,86 @@
+- generic [active] [ref=f12e1]:
+  - generic [ref=f12e29]:
+    - complementary [ref=f12e30]:
+      - link "Alan Saher · Studio" [ref=f12e31] [cursor=pointer]:
+        - /url: /admin
+      - navigation [ref=f12e32]:
+        - list [ref=f12e34]:
+          - listitem [ref=f12e35]:
+            - link "Dashboard" [ref=f12e36] [cursor=pointer]:
+              - /url: /admin
+        - generic [ref=f12e37]:
+          - paragraph [ref=f12e38]: Conteúdo
+          - list [ref=f12e39]:
+            - listitem [ref=f12e40]:
+              - link "Agenda" [ref=f12e41] [cursor=pointer]:
+                - /url: /admin/shows
+            - listitem [ref=f12e42]:
+              - link "Galeria" [ref=f12e43] [cursor=pointer]:
+                - /url: /admin/gallery
+            - listitem [ref=f12e44]:
+              - link "Biblioteca de mídia" [ref=f12e45] [cursor=pointer]:
+                - /url: /admin/media
+            - listitem [ref=f12e46]:
+              - link "Música" [ref=f12e47] [cursor=pointer]:
+                - /url: /admin/releases
+            - listitem [ref=f12e48]:
+              - link "Imprensa" [ref=f12e49] [cursor=pointer]:
+                - /url: /admin/press
+            - listitem [ref=f12e50]:
+              - link "Carreira" [ref=f12e51] [cursor=pointer]:
+                - /url: /admin/career
+            - listitem [ref=f12e52]:
+              - link "Página inicial" [ref=f12e53] [cursor=pointer]:
+                - /url: /admin/homepage
+        - generic [ref=f12e54]:
+          - paragraph [ref=f12e55]: Configurações
+          - list [ref=f12e56]:
+            - listitem [ref=f12e57]:
+              - link "Booking" [ref=f12e58] [cursor=pointer]:
+                - /url: /admin/booking
+            - listitem [ref=f12e59]:
+              - link "SEO" [ref=f12e60] [cursor=pointer]:
+                - /url: /admin/seo
+            - listitem [ref=f12e61]:
+              - link "Ajustes" [ref=f12e62] [cursor=pointer]:
+                - /url: /admin/settings
+      - generic [ref=f12e63]:
+        - paragraph [ref=f12e64]: admin@example.com
+        - button "Sair" [ref=f12e66]
+    - main [ref=f12e68]:
+      - generic [ref=f12e69]:
+        - heading "Olá, Alan" [level=1] [ref=f12e70]
+        - generic [ref=f12e71]:
+          - link "+ Novo show" [ref=f12e72] [cursor=pointer]:
+            - /url: /admin/shows/new
+          - link "+ Adicionar fotos" [ref=f12e73] [cursor=pointer]:
+            - /url: /admin/gallery
+          - link "+ Novo lançamento" [ref=f12e74] [cursor=pointer]:
+            - /url: /admin/releases/new
+          - link "+ Nova matéria" [ref=f12e75] [cursor=pointer]:
+            - /url: /admin/press/new
+        - generic [ref=f12e76]:
+          - link [ref=f12e77] [cursor=pointer]:
+            - /url: /admin/shows
+            - paragraph [ref=f12e78]: "0"
+            - paragraph [ref=f12e79]: Shows publicados
+          - link [ref=f12e80] [cursor=pointer]:
+            - /url: /admin/releases
+            - paragraph [ref=f12e81]: "0"
+            - paragraph [ref=f12e82]: Lançamentos publicados
+          - link [ref=f12e83] [cursor=pointer]:
+            - /url: /admin/gallery
+            - paragraph [ref=f12e84]: "8"
+            - paragraph [ref=f12e85]: Fotos na galeria
+          - link [ref=f12e86] [cursor=pointer]:
+            - /url: /admin/press
+            - paragraph [ref=f12e87]: "0"
+            - paragraph [ref=f12e88]: Matérias de imprensa
+        - generic [ref=f12e89]:
+          - generic [ref=f12e90]:
+            - paragraph [ref=f12e91]: Próximo show
+            - link "Ver agenda completa →" [ref=f12e92] [cursor=pointer]:
+              - /url: /admin/shows
+          - paragraph [ref=f12e93]: Nenhum show confirmado no momento.
+  - button "Open Next.js Dev Tools" [ref=f12e24] [cursor=pointer]
+  - alert [ref=f12e28]

@@ -2,7 +2,7 @@
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { bookingSchema, type BookingSchema } from "@/lib/validations/booking";
 import type { BookingSettingsDto } from "@/lib/content/dto";
 import { Reveal } from "@/components/Reveal";
@@ -35,6 +35,8 @@ export function Booking({ settings }: { settings: BookingSettingsDto }) {
     formState: { errors },
   } = useForm<BookingSchema>({ resolver: zodResolver(bookingSchema) });
 
+  const honeypotRef = useRef<HTMLInputElement>(null);
+
   const onSubmit = async (data: BookingSchema) => {
     setStatus("loading");
     track("booking_submit");
@@ -42,7 +44,7 @@ export function Booking({ settings }: { settings: BookingSettingsDto }) {
       const res = await fetch("/api/booking", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+        body: JSON.stringify({ ...data, company_website: honeypotRef.current?.value ?? "" }),
       });
       if (!res.ok) {
         const body = (await res.json().catch(() => null)) as { errors?: Record<string, string[]> } | null;
@@ -86,7 +88,11 @@ export function Booking({ settings }: { settings: BookingSettingsDto }) {
               </button>
             </div>
           ) : (
-            <form onSubmit={handleSubmit(onSubmit)} noValidate className="grid grid-cols-1 gap-x-8 gap-y-8 sm:grid-cols-2">
+            <form onSubmit={(e) => handleSubmit(onSubmit)(e)} noValidate className="grid grid-cols-1 gap-x-8 gap-y-8 sm:grid-cols-2">
+              {/* Honeypot — invisible to real visitors, tabIndex/autoComplete off; a filled value signals a bot. */}
+              <div className="absolute left-[-9999px]" aria-hidden="true">
+                <input ref={honeypotRef} type="text" name="company_website" tabIndex={-1} autoComplete="off" />
+              </div>
               {FIELDS.map((field) => (
                 <div key={field.name} className={field.half ? "sm:col-span-1" : "sm:col-span-2"}>
                   <label htmlFor={field.name} className="block text-xs uppercase tracking-[0.2em] text-fg-muted">

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { prisma } from "@/lib/db";
+import { formatDateOnly } from "@/lib/formatDate";
 
 function startOfTodayUTC() {
   const now = new Date();
@@ -71,7 +72,7 @@ export default async function DashboardPage() {
         </div>
         {data.nextShow ? (
           <p className="mt-2 text-sm text-neutral-700">
-            {new Intl.DateTimeFormat("pt-BR", { day: "2-digit", month: "short", year: "numeric" }).format(data.nextShow.date)}
+            {formatDateOnly(data.nextShow.date)}
             {" · "}
             {data.nextShow.city}
             {data.nextShow.venue ? ` · ${data.nextShow.venue}` : ""}

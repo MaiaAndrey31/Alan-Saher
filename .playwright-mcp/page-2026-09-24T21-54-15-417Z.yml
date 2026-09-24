@@ -1,0 +1,183 @@
+- generic [active] [ref=f20e1]:
+  - generic [ref=f20e3]:
+    - complementary [ref=f20e4]:
+      - link "Alan Saher · Studio" [ref=f20e5] [cursor=pointer]:
+        - /url: /admin
+      - navigation [ref=f20e6]:
+        - list [ref=f20e8]:
+          - listitem [ref=f20e9]:
+            - link "Dashboard" [ref=f20e10] [cursor=pointer]:
+              - /url: /admin
+        - generic [ref=f20e11]:
+          - paragraph [ref=f20e12]: Conteúdo
+          - list [ref=f20e13]:
+            - listitem [ref=f20e14]:
+              - link "Agenda" [ref=f20e15] [cursor=pointer]:
+                - /url: /admin/shows
+            - listitem [ref=f20e16]:
+              - link "Galeria" [ref=f20e17] [cursor=pointer]:
+                - /url: /admin/gallery
+            - listitem [ref=f20e18]:
+              - link "Biblioteca de mídia" [ref=f20e19] [cursor=pointer]:
+                - /url: /admin/media
+            - listitem [ref=f20e20]:
+              - link "Música" [ref=f20e21] [cursor=pointer]:
+                - /url: /admin/releases
+            - listitem [ref=f20e22]:
+              - link "Imprensa" [ref=f20e23] [cursor=pointer]:
+                - /url: /admin/press
+            - listitem [ref=f20e24]:
+              - link "Carreira" [ref=f20e25] [cursor=pointer]:
+                - /url: /admin/career
+            - listitem [ref=f20e26]:
+              - link "Página inicial" [ref=f20e27] [cursor=pointer]:
+                - /url: /admin/homepage
+        - generic [ref=f20e28]:
+          - paragraph [ref=f20e29]: Configurações
+          - list [ref=f20e30]:
+            - listitem [ref=f20e31]:
+              - link "Booking" [ref=f20e32] [cursor=pointer]:
+                - /url: /admin/booking
+            - listitem [ref=f20e33]:
+              - link "SEO" [ref=f20e34] [cursor=pointer]:
+                - /url: /admin/seo
+            - listitem [ref=f20e35]:
+              - link "Ajustes" [ref=f20e36] [cursor=pointer]:
+                - /url: /admin/settings
+      - generic [ref=f20e37]:
+        - paragraph [ref=f20e38]: admin@example.com
+        - button "Sair" [ref=f20e40]
+    - main [ref=f20e42]:
+      - generic [ref=f20e43]:
+        - heading "Biblioteca de mídia" [level=1] [ref=f20e44]
+        - generic [ref=f20e46]:
+          - generic [ref=f20e47]:
+            - textbox "Buscar por descrição…" [ref=f20e48]
+            - combobox [ref=f20e49]:
+              - option "Todas as categorias" [selected]
+              - option "hero"
+              - option "story"
+              - option "stages"
+              - option "narrative"
+              - option "experience"
+              - option "gallery"
+              - option "releases"
+              - option "press"
+              - option "presskit"
+              - option "shows"
+              - option "general"
+          - generic [ref=f20e50]:
+            - generic [ref=f20e51]:
+              - img "Alan Saher — placeholder" [ref=f20e53]
+              - paragraph [ref=f20e54]: Alan Saher — placeholder
+              - paragraph [ref=f20e55]: 1920×1080 · 0 B
+              - generic [ref=f20e56]:
+                - button "Copiar URL" [ref=f20e57]
+                - button "Excluir" [ref=f20e58]
+            - generic [ref=f20e59]:
+              - img "Alan Saher — placeholder" [ref=f20e61]
+              - paragraph [ref=f20e62]: Alan Saher — placeholder
+              - paragraph [ref=f20e63]: 1200×1200 · 0 B
+              - generic [ref=f20e64]:
+                - button "Copiar URL" [ref=f20e65]
+                - button "Excluir" [ref=f20e66]
+            - generic [ref=f20e67]:
+              - img "Alan Saher — placeholder" [ref=f20e69]
+              - paragraph [ref=f20e70]: Alan Saher — placeholder
+              - paragraph [ref=f20e71]: 1200×1500 · 0 B
+              - generic [ref=f20e72]:
+                - button "Copiar URL" [ref=f20e73]
+                - button "Excluir" [ref=f20e74]
+            - generic [ref=f20e75]:
+              - img "Alan Saher — placeholder" [ref=f20e77]
+              - paragraph [ref=f20e78]: Alan Saher — placeholder
+              - paragraph [ref=f20e79]: 1920×1080 · 0 B
+              - generic [ref=f20e80]:
+                - button "Copiar URL" [ref=f20e81]
+                - button "Excluir" [ref=f20e82]
+            - generic [ref=f20e83]:
+              - img "Alan Saher — placeholder" [ref=f20e85]
+              - paragraph [ref=f20e86]: Alan Saher — placeholder
+              - paragraph [ref=f20e87]: 1200×1500 · 0 B
+              - generic [ref=f20e88]:
+                - button "Copiar URL" [ref=f20e89]
+                - button "Excluir" [ref=f20e90]
+            - generic [ref=f20e91]:
+              - img "Alan Saher — placeholder" [ref=f20e93]
+              - paragraph [ref=f20e94]: Alan Saher — placeholder
+              - paragraph [ref=f20e95]: 1200×1200 · 0 B
+              - generic [ref=f20e96]:
+                - button "Copiar URL" [ref=f20e97]
+                - button "Excluir" [ref=f20e98]
+            - generic [ref=f20e99]:
+              - img "Alan Saher — placeholder" [ref=f20e101]
+              - paragraph [ref=f20e102]: Alan Saher — placeholder
+              - paragraph [ref=f20e103]: 1200×1500 · 0 B
+              - generic [ref=f20e104]:
+                - button "Copiar URL" [ref=f20e105]
+                - button "Excluir" [ref=f20e106]
+            - generic [ref=f20e107]:
+              - img "Alan Saher — placeholder" [ref=f20e109]
+              - paragraph [ref=f20e110]: Alan Saher — placeholder
+              - paragraph [ref=f20e111]: 1920×1080 · 0 B
+              - generic [ref=f20e112]:
+                - button "Copiar URL" [ref=f20e113]
+                - button "Excluir" [ref=f20e114]
+            - generic [ref=f20e115]:
+              - img "Alan Saher — placeholder" [ref=f20e117]
+              - paragraph [ref=f20e118]: Alan Saher — placeholder
+              - paragraph [ref=f20e119]: 1920×1080 · 0 B
+              - generic [ref=f20e120]:
+                - button "Copiar URL" [ref=f20e121]
+                - button "Excluir" [ref=f20e122]
+            - generic [ref=f20e123]:
+              - img "Alan Saher — placeholder" [ref=f20e125]
+              - paragraph [ref=f20e126]: Alan Saher — placeholder
+              - paragraph [ref=f20e127]: 1200×1500 · 0 B
+              - generic [ref=f20e128]:
+                - button "Copiar URL" [ref=f20e129]
+                - button "Excluir" [ref=f20e130]
+            - generic [ref=f20e131]:
+              - img "Alan Saher — placeholder" [ref=f20e133]
+              - paragraph [ref=f20e134]: Alan Saher — placeholder
+              - paragraph [ref=f20e135]: 1200×1500 · 0 B
+              - generic [ref=f20e136]:
+                - button "Copiar URL" [ref=f20e137]
+                - button "Excluir" [ref=f20e138]
+            - generic [ref=f20e139]:
+              - img "Alan Saher — placeholder" [ref=f20e141]
+              - paragraph [ref=f20e142]: Alan Saher — placeholder
+              - paragraph [ref=f20e143]: 1920×1080 · 0 B
+              - generic [ref=f20e144]:
+                - button "Copiar URL" [ref=f20e145]
+                - button "Excluir" [ref=f20e146]
+            - generic [ref=f20e147]:
+              - img "Alan Saher — placeholder" [ref=f20e149]
+              - paragraph [ref=f20e150]: Alan Saher — placeholder
+              - paragraph [ref=f20e151]: 1920×1080 · 0 B
+              - generic [ref=f20e152]:
+                - button "Copiar URL" [ref=f20e153]
+                - button "Excluir" [ref=f20e154]
+            - generic [ref=f20e155]:
+              - img "Alan Saher — placeholder" [ref=f20e157]
+              - paragraph [ref=f20e158]: Alan Saher — placeholder
+              - paragraph [ref=f20e159]: 1920×1080 · 0 B
+              - generic [ref=f20e160]:
+                - button "Copiar URL" [ref=f20e161]
+                - button "Excluir" [ref=f20e162]
+            - generic [ref=f20e163]:
+              - img "Alan Saher — placeholder" [ref=f20e165]
+              - paragraph [ref=f20e166]: Alan Saher — placeholder
+              - paragraph [ref=f20e167]: 1920×1080 · 0 B
+              - generic [ref=f20e168]:
+                - button "Copiar URL" [ref=f20e169]
+                - button "Excluir" [ref=f20e170]
+            - generic [ref=f20e171]:
+              - img "Alan Saher — placeholder" [ref=f20e173]
+              - paragraph [ref=f20e174]: Alan Saher — placeholder
+              - paragraph [ref=f20e175]: 1920×1080 · 0 B
+              - generic [ref=f20e176]:
+                - button "Copiar URL" [ref=f20e177]
+                - button "Excluir" [ref=f20e178]
+  - button "Open Next.js Dev Tools" [ref=f20e184] [cursor=pointer]
+  - alert [ref=f20e188]

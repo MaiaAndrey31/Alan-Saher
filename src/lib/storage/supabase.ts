@@ -56,6 +56,13 @@ export const supabaseStorage: StorageProvider = {
     };
   },
 
+  async readHeadBytes(path: string, maxBytes: number): Promise<Buffer | null> {
+    const publicUrl = supabaseStorage.getPublicUrl(path);
+    const response = await fetch(publicUrl, { headers: { Range: `bytes=0-${maxBytes}` } }).catch(() => null);
+    if (!response || !response.ok) return null;
+    return Buffer.from(await response.arrayBuffer());
+  },
+
   getPublicUrl(path: string): string {
     const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
     if (!url) throw new Error("Missing NEXT_PUBLIC_SUPABASE_URL.");

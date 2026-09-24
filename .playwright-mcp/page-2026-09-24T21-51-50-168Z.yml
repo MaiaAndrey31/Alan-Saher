@@ -1,0 +1,97 @@
+- generic [active] [ref=f13e1]:
+  - generic [ref=f13e3]:
+    - complementary [ref=f13e4]:
+      - link "Alan Saher · Studio" [ref=f13e5] [cursor=pointer]:
+        - /url: /admin
+      - navigation [ref=f13e6]:
+        - list [ref=f13e8]:
+          - listitem [ref=f13e9]:
+            - link "Dashboard" [ref=f13e10] [cursor=pointer]:
+              - /url: /admin
+        - generic [ref=f13e11]:
+          - paragraph [ref=f13e12]: Conteúdo
+          - list [ref=f13e13]:
+            - listitem [ref=f13e14]:
+              - link "Agenda" [ref=f13e15] [cursor=pointer]:
+                - /url: /admin/shows
+            - listitem [ref=f13e16]:
+              - link "Galeria" [ref=f13e17] [cursor=pointer]:
+                - /url: /admin/gallery
+            - listitem [ref=f13e18]:
+              - link "Biblioteca de mídia" [ref=f13e19] [cursor=pointer]:
+                - /url: /admin/media
+            - listitem [ref=f13e20]:
+              - link "Música" [ref=f13e21] [cursor=pointer]:
+                - /url: /admin/releases
+            - listitem [ref=f13e22]:
+              - link "Imprensa" [ref=f13e23] [cursor=pointer]:
+                - /url: /admin/press
+            - listitem [ref=f13e24]:
+              - link "Carreira" [ref=f13e25] [cursor=pointer]:
+                - /url: /admin/career
+            - listitem [ref=f13e26]:
+              - link "Página inicial" [ref=f13e27] [cursor=pointer]:
+                - /url: /admin/homepage
+        - generic [ref=f13e28]:
+          - paragraph [ref=f13e29]: Configurações
+          - list [ref=f13e30]:
+            - listitem [ref=f13e31]:
+              - link "Booking" [ref=f13e32] [cursor=pointer]:
+                - /url: /admin/booking
+            - listitem [ref=f13e33]:
+              - link "SEO" [ref=f13e34] [cursor=pointer]:
+                - /url: /admin/seo
+            - listitem [ref=f13e35]:
+              - link "Ajustes" [ref=f13e36] [cursor=pointer]:
+                - /url: /admin/settings
+      - generic [ref=f13e37]:
+        - paragraph [ref=f13e38]: admin@example.com
+        - button "Sair" [ref=f13e40]
+    - main [ref=f13e42]:
+      - generic [ref=f13e43]:
+        - heading "Galeria" [level=1] [ref=f13e44]
+        - paragraph [ref=f13e45]: Arraste para reordenar. A ordem reflete automaticamente no site.
+        - generic [ref=f13e47]:
+          - button "Enviar fotos" [ref=f13e49]
+          - generic [ref=f13e50]:
+            - generic [ref=f13e51]:
+              - img "Alan Saher — placeholder photo 1" [ref=f13e52]
+              - button "Reordenar" [ref=f13e53]: ⠿
+              - generic [ref=f13e54]: Publicado
+              - button "Editar" [ref=f13e55]
+            - generic [ref=f13e56]:
+              - img "Alan Saher — placeholder photo 2" [ref=f13e57]
+              - button "Reordenar" [ref=f13e58]: ⠿
+              - generic [ref=f13e59]: Publicado
+              - button "Editar" [ref=f13e60]
+            - generic [ref=f13e61]:
+              - img "Alan Saher — placeholder photo 3" [ref=f13e62]
+              - button "Reordenar" [ref=f13e63]: ⠿
+              - generic [ref=f13e64]: Publicado
+              - button "Editar" [ref=f13e65]
+            - generic [ref=f13e66]:
+              - img "Alan Saher — placeholder photo 4" [ref=f13e67]
+              - button "Reordenar" [ref=f13e68]: ⠿
+              - generic [ref=f13e69]: Publicado
+              - button "Editar" [ref=f13e70]
+            - generic [ref=f13e71]:
+              - img "Alan Saher — placeholder photo 5" [ref=f13e72]
+              - button "Reordenar" [ref=f13e73]: ⠿
+              - generic [ref=f13e74]: Publicado
+              - button "Editar" [ref=f13e75]
+            - generic [ref=f13e76]:
+              - img "Alan Saher — placeholder photo 6" [ref=f13e77]
+              - button "Reordenar" [ref=f13e78]: ⠿
+              - generic [ref=f13e79]: Publicado
+              - button "Editar" [ref=f13e80]
+            - generic [ref=f13e81]:
+              - img "Alan Saher — placeholder photo 7" [ref=f13e82]
+              - button "Reordenar" [ref=f13e83]: ⠿
+              - generic [ref=f13e84]: Publicado
+              - button "Editar" [ref=f13e85]
+            - generic [ref=f13e86]:
+              - img "Alan Saher — placeholder photo 8" [ref=f13e87]
+              - button "Reordenar" [ref=f13e88]: ⠿
+              - generic [ref=f13e89]: Publicado
+              - button "Editar" [ref=f13e90]
+  - button "Open Next.js Dev Tools" [ref=f13e96] [cursor=pointer]

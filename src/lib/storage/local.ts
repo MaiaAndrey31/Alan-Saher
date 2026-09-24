@@ -1,5 +1,5 @@
 import "server-only";
-import { access, mkdir, stat, unlink } from "node:fs/promises";
+import { access, mkdir, stat, unlink, open } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import type { StorageProvider, UploadTicket, HeadResult, CreateUploadTicketInput } from "./types";
 
@@ -39,11 +39,27 @@ export const localStorage: StorageProvider = {
     }
   },
 
+  async readHeadBytes(path: string, maxBytes: number): Promise<Buffer | null> {
+    const fullPath = join(UPLOADS_ROOT, path);
+    try {
+      const handle = await open(fullPath, "r");
+      try {
+        const buffer = Buffer.alloc(maxBytes);
+        const { bytesRead } = await handle.read(buffer, 0, maxBytes, 0);
+        return buffer.subarray(0, bytesRead);
+      } finally {
+        await handle.close();
+      }
+    } catch {
+      return null;
+    }
+  },
+
   getPublicUrl(path: string): string {
-    // Absolute — the register Server Action does a server-side fetch() of
-    // this URL to sniff real magic bytes, which requires a full URL.
-    const base = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
-    return `${base}/uploads/${path}`;
+    // Relative — served by Next's own static handling from public/uploads/.
+    // Must NOT be absolute: next/image treats any absolute URL as a remote
+    // host requiring `images.remotePatterns`, even for the app's own origin.
+    return `/uploads/${path}`;
   },
 
   async delete(paths: string[]): Promise<void> {
