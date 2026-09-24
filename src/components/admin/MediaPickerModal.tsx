@@ -1,0 +1,109 @@
+"use client";
+
+import { useEffect, useRef, useState, useTransition } from "react";
+import Image from "next/image";
+import { listMedia, type MediaListItem } from "@/app/(admin)/admin/_actions/mediaQueries";
+import { uploadFile } from "@/lib/uploadFile";
+
+interface MediaPickerModalProps {
+  folder: string;
+  onSelect: (media: { id: string; url: string }) => void;
+  onClose: () => void;
+}
+
+export function MediaPickerModal({ folder, onSelect, onClose }: MediaPickerModalProps) {
+  const [items, setItems] = useState<MediaListItem[]>([]);
+  const [isLoading, startTransition] = useTransition();
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const load = () => {
+    startTransition(async () => {
+      const results = await listMedia({ folder });
+      setItems(results);
+    });
+  };
+
+  useEffect(load, [folder]);
+
+  const handleFiles = async (files: FileList | null) => {
+    if (!files || files.length === 0) return;
+    setIsUploading(true);
+    setUploadError(null);
+    const file = files[0];
+    const result = await uploadFile(file, folder);
+    setIsUploading(false);
+    if (!result.ok || !result.mediaId || !result.url) {
+      setUploadError(result.error ?? "Falha no envio.");
+      return;
+    }
+    onSelect({ id: result.mediaId, url: result.url });
+  };
+
+  return (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 p-4" role="dialog" aria-modal="true">
+      <div className="flex max-h-[80vh] w-full max-w-3xl flex-col overflow-hidden rounded-lg bg-white shadow-xl">
+        <div className="flex items-center justify-between border-b border-neutral-200 px-5 py-4">
+          <p className="text-sm font-medium">Escolher imagem</p>
+          <button onClick={onClose} className="text-neutral-500 hover:text-neutral-900" aria-label="Fechar">
+            Fechar
+          </button>
+        </div>
+
+        <div className="flex items-center gap-3 border-b border-neutral-200 px-5 py-3">
+          <button
+            onClick={() => fileInputRef.current?.click()}
+            disabled={isUploading}
+            className="rounded-md bg-neutral-900 px-4 py-2 text-xs font-medium text-white disabled:opacity-50"
+          >
+            {isUploading ? "Enviando…" : "Enviar novo arquivo"}
+          </button>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/jpeg,image/png,image/webp,image/avif"
+            className="hidden"
+            onChange={(e) => handleFiles(e.target.files)}
+          />
+          {uploadError && <span className="text-xs text-red-600">{uploadError}</span>}
+        </div>
+
+        <div
+          className="flex-1 overflow-y-auto p-5"
+          onDragOver={(e) => e.preventDefault()}
+          onDrop={(e) => {
+            e.preventDefault();
+            handleFiles(e.dataTransfer.files);
+          }}
+        >
+          {isLoading ? (
+            <p className="text-sm text-neutral-500">Carregando…</p>
+          ) : items.length === 0 ? (
+            <p className="text-sm text-neutral-500">
+              Nenhuma imagem nesta categoria ainda. Envie a primeira acima ou arraste um arquivo aqui.
+            </p>
+          ) : (
+            <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 md:grid-cols-5">
+              {items.map((item) => (
+                <button
+                  key={item.id}
+                  onClick={() => onSelect({ id: item.id, url: item.url })}
+                  className="relative aspect-square overflow-hidden rounded-md border border-neutral-200 hover:ring-2 hover:ring-neutral-900"
+                >
+                  <Image src={item.url} alt={item.alt ?? ""} fill sizes="200px" className="object-cover" unoptimized />
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <div className="flex justify-end border-t border-neutral-200 px-5 py-3">
+          <button onClick={onClose} className="text-xs text-neutral-500 hover:text-neutral-900">
+            Cancelar
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}

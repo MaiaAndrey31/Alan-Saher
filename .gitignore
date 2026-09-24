@@ -32,6 +32,7 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+!.env.example
 
 # vercel
 .vercel
@@ -39,3 +40,12 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# prisma — regenerated via `prisma generate` (postinstall), never committed
+/src/generated/
+
+# local-dev-only uploads (production uploads live in Supabase Storage, never
+# on the app filesystem) — keep the folder structure, not its contents
+/public/uploads/*
+!/public/uploads/.gitkeep
+!/public/uploads/*/.gitkeep
