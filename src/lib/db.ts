@@ -15,7 +15,17 @@ import { PrismaClient } from "../generated/prisma/client";
  */
 const globalForPrisma = globalThis as unknown as { prisma?: PrismaClient };
 
-const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL! });
+// Fail loudly: with no connection string node-postgres silently falls back to
+// 127.0.0.1:5432, which surfaces as a misleading "Can't reach database server".
+const connectionString = process.env.DATABASE_URL;
+if (!connectionString) {
+  throw new Error(
+    "DATABASE_URL não definida. Na Vercel: Settings > Environment Variables " +
+      "(marque Production/Preview) e faça um novo deploy. Localmente: confira o .env."
+  );
+}
+
+const adapter = new PrismaPg({ connectionString });
 
 export const prisma = globalForPrisma.prisma ?? new PrismaClient({ adapter });
 
