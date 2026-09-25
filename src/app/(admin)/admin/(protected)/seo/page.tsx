@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/db";
 import { SeoForm } from "./SeoForm";
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://alansaher.com";
+import { siteUrl } from "@/lib/siteUrl";
 
 export default async function SeoAdminPage() {
   const [seo, site] = await Promise.all([

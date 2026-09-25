@@ -1,6 +1,6 @@
 import type { SiteDto, SocialLinkDto, ShowDto } from "@/lib/content/dto";
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://alansaher.com";
+import { siteUrl } from "@/lib/siteUrl";
 
 export function getPersonJsonLd(site: SiteDto, socialLinks: SocialLinkDto[]) {
   const sameAs = socialLinks.filter((link) => link.configured).map((link) => link.url);

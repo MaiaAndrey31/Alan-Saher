@@ -6,7 +6,7 @@ import { SmoothScrollProvider } from "@/components/SmoothScrollProvider";
 import { CustomCursor } from "@/components/CustomCursor";
 import { AppReadyProvider } from "@/hooks/useAppReady";
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://alansaher.com";
+import { siteUrl } from "@/lib/siteUrl";
 
 export async function generateMetadata(): Promise<Metadata> {
   const [site, seo] = await Promise.all([getSiteSettings(), getSeoSettings()]);
