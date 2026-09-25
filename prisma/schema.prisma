@@ -218,6 +218,8 @@ model Hero {
   video              Media?   @relation("HeroVideo", fields: [videoId], references: [id], onDelete: Restrict)
   posterImageId      String?
   posterImage        Media?   @relation("HeroPoster", fields: [posterImageId], references: [id], onDelete: Restrict)
+  /// Background video from YouTube (takes precedence over `video` when set).
+  youtubeUrl         String?
   enableWebgl        Boolean  @default(true)
   primaryCtaLabel    String   @default("Explore")
   primaryCtaTarget   String   @default("story")

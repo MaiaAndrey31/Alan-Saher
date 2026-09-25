@@ -23,6 +23,7 @@ export interface HeroDto {
   eyebrow: string | null;
   backgroundUrl: string | null;
   videoUrl: string | null;
+  youtubeId: string | null;
   posterUrl: string | null;
   enableWebgl: boolean;
   primaryCtaLabel: string;

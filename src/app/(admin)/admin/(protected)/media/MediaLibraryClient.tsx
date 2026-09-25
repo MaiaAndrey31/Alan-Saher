@@ -56,7 +56,11 @@ export function MediaLibraryClient({ initialItems }: { initialItems: MediaListIt
           {items.map((item) => (
             <div key={item.id} className="rounded-md border border-neutral-200 bg-white p-2">
               <div className="relative aspect-square overflow-hidden rounded">
-                <Image src={item.url} alt={item.alt ?? ""} fill sizes="200px" className="object-cover" unoptimized />
+                {item.kind === "VIDEO" ? (
+                  <video src={item.url} muted playsInline preload="metadata" className="absolute inset-0 h-full w-full object-cover" />
+                ) : (
+                  <Image src={item.url} alt={item.alt ?? ""} fill sizes="200px" className="object-cover" unoptimized />
+                )}
               </div>
               <p className="mt-2 truncate text-xs text-neutral-600" title={item.alt ?? ""}>
                 {item.alt || "(sem descrição)"}

@@ -3,15 +3,16 @@
 import { useEffect, useRef, useState, useTransition } from "react";
 import Image from "next/image";
 import { listMedia, type MediaListItem } from "@/app/(admin)/admin/_actions/mediaQueries";
-import { uploadFile } from "@/lib/uploadFile";
+import { uploadFile, type UploadKind } from "@/lib/uploadFile";
 
 interface MediaPickerModalProps {
   folder: string;
+  kind?: UploadKind;
   onSelect: (media: { id: string; url: string }) => void;
   onClose: () => void;
 }
 
-export function MediaPickerModal({ folder, onSelect, onClose }: MediaPickerModalProps) {
+export function MediaPickerModal({ folder, kind = "image", onSelect, onClose }: MediaPickerModalProps) {
   const [items, setItems] = useState<MediaListItem[]>([]);
   const [isLoading, startTransition] = useTransition();
   const [isUploading, setIsUploading] = useState(false);
@@ -20,19 +21,19 @@ export function MediaPickerModal({ folder, onSelect, onClose }: MediaPickerModal
 
   const load = () => {
     startTransition(async () => {
-      const results = await listMedia({ folder });
+      const results = await listMedia({ folder, kind: kind === "video" ? "VIDEO" : "IMAGE" });
       setItems(results);
     });
   };
 
-  useEffect(load, [folder]);
+  useEffect(load, [folder, kind]);
 
   const handleFiles = async (files: FileList | null) => {
     if (!files || files.length === 0) return;
     setIsUploading(true);
     setUploadError(null);
     const file = files[0];
-    const result = await uploadFile(file, folder);
+    const result = await uploadFile(file, folder, undefined, kind);
     setIsUploading(false);
     if (!result.ok || !result.mediaId || !result.url) {
       setUploadError(result.error ?? "Falha no envio.");
@@ -45,7 +46,7 @@ export function MediaPickerModal({ folder, onSelect, onClose }: MediaPickerModal
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 p-4" role="dialog" aria-modal="true">
       <div className="flex max-h-[80vh] w-full max-w-3xl flex-col overflow-hidden rounded-lg bg-white shadow-xl">
         <div className="flex items-center justify-between border-b border-neutral-200 px-5 py-4">
-          <p className="text-sm font-medium">Escolher imagem</p>
+          <p className="text-sm font-medium">{kind === "video" ? "Escolher vídeo" : "Escolher imagem"}</p>
           <button onClick={onClose} className="text-neutral-500 hover:text-neutral-900" aria-label="Fechar">
             Fechar
           </button>
@@ -62,7 +63,7 @@ export function MediaPickerModal({ folder, onSelect, onClose }: MediaPickerModal
           <input
             ref={fileInputRef}
             type="file"
-            accept="image/jpeg,image/png,image/webp,image/avif"
+            accept={kind === "video" ? "video/mp4" : "image/jpeg,image/png,image/webp,image/avif"}
             className="hidden"
             onChange={(e) => handleFiles(e.target.files)}
           />
@@ -81,7 +82,7 @@ export function MediaPickerModal({ folder, onSelect, onClose }: MediaPickerModal
             <p className="text-sm text-neutral-500">Carregando…</p>
           ) : items.length === 0 ? (
             <p className="text-sm text-neutral-500">
-              Nenhuma imagem nesta categoria ainda. Envie a primeira acima ou arraste um arquivo aqui.
+              {kind === "video" ? "Nenhum vídeo" : "Nenhuma imagem"} nesta categoria ainda. Envie a primeira acima ou arraste um arquivo aqui.
             </p>
           ) : (
             <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 md:grid-cols-5">
@@ -91,7 +92,11 @@ export function MediaPickerModal({ folder, onSelect, onClose }: MediaPickerModal
                   onClick={() => onSelect({ id: item.id, url: item.url })}
                   className="relative aspect-square overflow-hidden rounded-md border border-neutral-200 hover:ring-2 hover:ring-neutral-900"
                 >
-                  <Image src={item.url} alt={item.alt ?? ""} fill sizes="200px" className="object-cover" unoptimized />
+                  {item.kind === "VIDEO" ? (
+                    <video src={item.url} muted playsInline preload="metadata" className="absolute inset-0 h-full w-full object-cover" />
+                  ) : (
+                    <Image src={item.url} alt={item.alt ?? ""} fill sizes="200px" className="object-cover" unoptimized />
+                  )}
                 </button>
               ))}
             </div>

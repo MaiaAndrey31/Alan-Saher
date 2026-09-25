@@ -4,12 +4,14 @@ import { unstable_cache } from "next/cache";
 import { prisma } from "@/lib/db";
 import { CACHE_TAGS } from "./tags";
 import type { HeroDto } from "./dto";
+import { parseYouTubeId } from "@/lib/youtube";
 
 const FALLBACK: HeroDto = {
   headlineLines: ["Alan", "Saher"],
   eyebrow: null,
   backgroundUrl: null,
   videoUrl: null,
+  youtubeId: null,
   posterUrl: null,
   enableWebgl: true,
   primaryCtaLabel: "Explore",
@@ -30,6 +32,7 @@ const query = unstable_cache(
       eyebrow: row.eyebrowOverride,
       backgroundUrl: row.backgroundImage?.url ?? null,
       videoUrl: row.video?.url ?? null,
+      youtubeId: row.youtubeUrl ? parseYouTubeId(row.youtubeUrl) : null,
       posterUrl: row.posterImage?.url ?? null,
       enableWebgl: row.enableWebgl,
       primaryCtaLabel: row.primaryCtaLabel,

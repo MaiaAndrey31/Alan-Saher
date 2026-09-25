@@ -7,9 +7,9 @@ import { prisma } from "@/lib/db";
 import { storage } from "@/lib/storage";
 import { CACHE_TAGS } from "@/lib/content/tags";
 import { getMediaUsage } from "@/lib/content/media";
-import { registerMediaSchema, ALLOWED_IMAGE_MIME_TYPES } from "@/lib/validations/media";
+import { registerMediaSchema, ALLOWED_IMAGE_MIME_TYPES, ALLOWED_VIDEO_MIME_TYPES, isVideoMime, maxBytesFor } from "@/lib/validations/media";
 
-type ActionResult = { ok: true; id: string } | { ok: false; error: string };
+type ActionResult = { ok: true; id: string; url: string } | { ok: false; error: string };
 
 /**
  * Runs AFTER the browser has already PUT the file's bytes directly to
@@ -23,7 +23,7 @@ export async function registerUploadedMedia(input: unknown): Promise<ActionResul
 
   const parsed = registerMediaSchema.safeParse(input);
   if (!parsed.success) return { ok: false, error: "Dados inválidos." };
-  const { path, width, height, alt, folder } = parsed.data;
+  const { path, mimeType: declaredMime, width, height, durationSec, alt, folder } = parsed.data;
 
   const head = await storage.head(path);
   if (!head.exists) return { ok: false, error: "Falha no envio — arquivo não encontrado." };
@@ -38,9 +38,16 @@ export async function registerUploadedMedia(input: unknown): Promise<ActionResul
   const sniffed = await fileTypeFromBuffer(buffer);
   const publicUrl = storage.getPublicUrl(path);
 
-  if (!sniffed || !ALLOWED_IMAGE_MIME_TYPES.includes(sniffed.mime as (typeof ALLOWED_IMAGE_MIME_TYPES)[number])) {
+  // The sniffed type must be in the same family (image vs video) the client
+  // declared — an image-only field can never end up holding a video.
+  const allowed: readonly string[] = isVideoMime(declaredMime) ? ALLOWED_VIDEO_MIME_TYPES : ALLOWED_IMAGE_MIME_TYPES;
+  if (!sniffed || !allowed.includes(sniffed.mime)) {
     await storage.delete([path]);
     return { ok: false, error: "Tipo de arquivo não permitido." };
+  }
+  if (head.sizeBytes > maxBytesFor(sniffed.mime)) {
+    await storage.delete([path]);
+    return { ok: false, error: "Arquivo muito grande." };
   }
 
   const media = await prisma.media.create({
@@ -48,10 +55,12 @@ export async function registerUploadedMedia(input: unknown): Promise<ActionResul
       bucket: "uploads",
       path,
       url: publicUrl,
+      kind: isVideoMime(sniffed.mime) ? "VIDEO" : "IMAGE",
       mimeType: sniffed.mime,
       sizeBytes: head.sizeBytes,
       width,
       height,
+      durationSec: durationSec ?? null,
       alt: alt ?? null,
       folder,
       uploadedById: user.id,
@@ -59,7 +68,7 @@ export async function registerUploadedMedia(input: unknown): Promise<ActionResul
   });
 
   revalidateTag(CACHE_TAGS.media, "max");
-  return { ok: true, id: media.id };
+  return { ok: true, id: media.id, url: media.url };
 }
 
 export async function updateMediaMeta(id: string, data: { alt?: string; title?: string; folder?: string }) {

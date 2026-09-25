@@ -1,6 +1,7 @@
 "use client";
 
 import type { SiteDto, SocialLinkDto } from "@/lib/content/dto";
+import Image from "next/image";
 import { scrollToSection } from "@/lib/lenisStore";
 import { track } from "@/lib/analytics";
 
@@ -18,7 +19,14 @@ export function Footer({ site, socialLinks }: FooterProps) {
         <div className="flex flex-col items-start justify-between gap-12 md:flex-row md:items-end">
           <div>
             <p className="text-xs uppercase tracking-[0.3em] text-fg-muted">{site.roles.join(" · ")}</p>
-            <p className="mt-4 font-display text-3xl tracking-tight md:text-5xl">{site.artistName}</p>
+            <Image
+              src="/images/logo-alan-saher.png"
+              alt={site.artistName}
+              width={559}
+              height={480}
+              sizes="(min-width: 768px) 140px, 112px"
+              className="mt-5 h-24 w-auto md:h-30"
+            />
           </div>
 
           <nav aria-label="Social" className="flex flex-col gap-3 text-sm uppercase tracking-[0.2em]">

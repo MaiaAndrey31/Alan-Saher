@@ -20,9 +20,16 @@ export async function updateHeroAction(_prev: ActionState, formData: FormData): 
     secondaryCtaTarget: formData.get("secondaryCtaTarget") ?? "",
     enableWebgl: formData.get("enableWebgl") === "on",
     backgroundImageId: formData.get("backgroundImageId") ?? "",
+    backgroundType: formData.get("backgroundType") ?? "image",
+    videoId: formData.get("videoId") ?? "",
+    youtubeUrl: formData.get("youtubeUrl") ?? "",
   });
   if (!parsed.success) return { ok: false, fieldErrors: parsed.error.flatten().fieldErrors };
   const data = parsed.data;
+  // Only the selected background type is kept — switching back to "image"
+  // clears the video/YouTube so the site never shows a stale one.
+  const videoId = data.backgroundType === "video" ? data.videoId || null : null;
+  const youtubeUrl = data.backgroundType === "youtube" ? data.youtubeUrl || null : null;
 
   await prisma.hero.upsert({
     where: { id: "singleton" },
@@ -36,6 +43,8 @@ export async function updateHeroAction(_prev: ActionState, formData: FormData): 
       secondaryCtaTarget: data.secondaryCtaTarget,
       enableWebgl: data.enableWebgl ?? true,
       backgroundImageId: data.backgroundImageId || null,
+      videoId,
+      youtubeUrl,
     },
     update: {
       headlineLines: [data.headlineLine1, data.headlineLine2],
@@ -46,6 +55,8 @@ export async function updateHeroAction(_prev: ActionState, formData: FormData): 
       secondaryCtaTarget: data.secondaryCtaTarget,
       enableWebgl: data.enableWebgl ?? true,
       backgroundImageId: data.backgroundImageId || null,
+      videoId,
+      youtubeUrl,
     },
   });
 

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import { useGSAP } from "@gsap/react";
 import { gsap } from "@/lib/gsap";
 import { scrollToSection } from "@/lib/lenisStore";
@@ -118,10 +119,18 @@ export function Header({ artistName, navItems }: HeaderProps) {
               window.scrollTo({ top: 0, behavior: "smooth" });
             }}
             tabIndex={isMenuOpen ? -1 : 0}
-            className="font-display text-sm tracking-[0.2em] uppercase"
+            className="block"
             data-cursor="view"
           >
-            {artistName}
+            <Image
+              src="/images/logo-alan-saher.png"
+              alt={artistName}
+              width={559}
+              height={480}
+              priority
+              sizes="72px"
+              className="h-12 w-auto md:h-14"
+            />
           </a>
 
           <nav aria-label="Primary" className="hidden md:flex items-center gap-10">

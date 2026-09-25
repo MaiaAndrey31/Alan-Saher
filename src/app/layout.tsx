@@ -1,12 +1,12 @@
 import type { ReactNode } from "react";
-import { Fraunces, Inter } from "next/font/google";
+import { Orbitron, Inter } from "next/font/google";
 import "./globals.css";
 
-const fraunces = Fraunces({
-  variable: "--font-fraunces",
+// Free (OFL) stand-in for the logo's Ethnocentric lettering — Ethnocentric
+// itself needs a paid webfont license. Variable font (wght 400–900).
+const orbitron = Orbitron({
+  variable: "--font-orbitron",
   subsets: ["latin"],
-  style: ["normal", "italic"],
-  axes: ["opsz", "SOFT"],
   display: "swap",
 });
 
@@ -25,7 +25,7 @@ const inter = Inter({
  */
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en" className={`${fraunces.variable} ${inter.variable} h-full`} suppressHydrationWarning>
+    <html lang="en" className={`${orbitron.variable} ${inter.variable} h-full`} suppressHydrationWarning>
       <body className="min-h-full antialiased" suppressHydrationWarning>
         {children}
       </body>

@@ -6,6 +6,22 @@ import { z } from "zod";
 export const ALLOWED_IMAGE_MIME_TYPES = ["image/jpeg", "image/png", "image/webp", "image/avif"] as const;
 export const MAX_IMAGE_BYTES = 15 * 1024 * 1024; // 15MB — generous for straight-off-camera photos
 
+// MP4 only — the one format every browser plays in a <video> without fallbacks.
+export const ALLOWED_VIDEO_MIME_TYPES = ["video/mp4"] as const;
+// 50MB — Supabase Storage's default per-file limit on the free plan; also a
+// sane ceiling for an autoplaying background loop.
+export const MAX_VIDEO_BYTES = 50 * 1024 * 1024;
+
+export const ALLOWED_UPLOAD_MIME_TYPES = [...ALLOWED_IMAGE_MIME_TYPES, ...ALLOWED_VIDEO_MIME_TYPES] as const;
+
+export function isVideoMime(mime: string): boolean {
+  return (ALLOWED_VIDEO_MIME_TYPES as readonly string[]).includes(mime);
+}
+
+export function maxBytesFor(mime: string): number {
+  return isVideoMime(mime) ? MAX_VIDEO_BYTES : MAX_IMAGE_BYTES;
+}
+
 export const MEDIA_FOLDERS = [
   "hero",
   "story",
@@ -20,18 +36,21 @@ export const MEDIA_FOLDERS = [
   "general",
 ] as const;
 
-export const signUploadSchema = z.object({
-  filename: z.string().trim().min(1).max(255),
-  contentType: z.enum(ALLOWED_IMAGE_MIME_TYPES),
-  sizeBytes: z.number().int().positive().max(MAX_IMAGE_BYTES),
-  folder: z.enum(MEDIA_FOLDERS).default("general"),
-});
+export const signUploadSchema = z
+  .object({
+    filename: z.string().trim().min(1).max(255),
+    contentType: z.enum(ALLOWED_UPLOAD_MIME_TYPES),
+    sizeBytes: z.number().int().positive(),
+    folder: z.enum(MEDIA_FOLDERS).default("general"),
+  })
+  .refine((v) => v.sizeBytes <= maxBytesFor(v.contentType), { path: ["sizeBytes"], message: "Arquivo muito grande." });
 
 export const registerMediaSchema = z.object({
   path: z.string().trim().min(1),
-  mimeType: z.enum(ALLOWED_IMAGE_MIME_TYPES),
+  mimeType: z.enum(ALLOWED_UPLOAD_MIME_TYPES),
   width: z.number().int().positive(),
   height: z.number().int().positive(),
+  durationSec: z.number().int().nonnegative().optional(),
   alt: z.string().trim().max(300).optional(),
   folder: z.enum(MEDIA_FOLDERS).default("general"),
 });

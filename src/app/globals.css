@@ -47,7 +47,9 @@
   --color-fg-muted: var(--fg-muted);
   --color-accent: var(--accent);
   --color-border: var(--border);
-  --font-display: var(--font-fraunces);
+  --font-display: var(--font-orbitron);
+  /* Matches the logo's heavy lettering; set per-token so `font-display` alone carries it. */
+  --font-display--font-variation-settings: "wght" 700;
   --font-sans: var(--font-inter);
 }
 

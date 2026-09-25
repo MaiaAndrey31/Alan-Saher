@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, useTransition } from "react";
+import { useId, useRef, useState, useTransition } from "react";
 import Image from "next/image";
 import {
   DndContext,
@@ -67,20 +67,22 @@ export function GalleryGrid({ initialItems }: { initialItems: GalleryAdminItem[]
   const [uploadError, setUploadError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [, startTransition] = useTransition();
+  // Stable id so dnd-kit's generated aria-describedby matches between SSR and hydration.
+  const dndContextId = useId();
 
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }), useSensor(TouchSensor));
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
     if (!over || active.id === over.id) return;
-    setItems((prev) => {
-      const oldIndex = prev.findIndex((i) => i.id === active.id);
-      const newIndex = prev.findIndex((i) => i.id === over.id);
-      const next = arrayMove(prev, oldIndex, newIndex);
-      startTransition(() => {
-        reorderGalleryItems(next.map((i) => i.id));
-      });
-      return next;
+    // Compute outside the setState updater: updaters run during render (and
+    // twice in StrictMode), so side effects like the server action can't live there.
+    const oldIndex = items.findIndex((i) => i.id === active.id);
+    const newIndex = items.findIndex((i) => i.id === over.id);
+    const next = arrayMove(items, oldIndex, newIndex);
+    setItems(next);
+    startTransition(async () => {
+      await reorderGalleryItems(next.map((i) => i.id));
     });
   };
 
@@ -124,7 +126,7 @@ export function GalleryGrid({ initialItems }: { initialItems: GalleryAdminItem[]
       {items.length === 0 ? (
         <p className="mt-8 text-sm text-neutral-500">Nenhuma foto ainda. Envie a primeira acima.</p>
       ) : (
-        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+        <DndContext id={dndContextId} sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
           <SortableContext items={items.map((i) => i.id)} strategy={rectSortingStrategy}>
             <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-6">
               {items.map((item) => (

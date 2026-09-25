@@ -4,7 +4,7 @@ import { BioForm } from "./BioForm";
 
 export default async function HomepagePage() {
   const [hero, site] = await Promise.all([
-    prisma.hero.findUnique({ where: { id: "singleton" }, include: { backgroundImage: true } }),
+    prisma.hero.findUnique({ where: { id: "singleton" }, include: { backgroundImage: true, video: true } }),
     prisma.siteSettings.findUnique({ where: { id: "singleton" } }),
   ]);
 
@@ -26,6 +26,9 @@ export default async function HomepagePage() {
               secondaryCtaTarget: hero?.secondaryCtaTarget,
               enableWebgl: hero?.enableWebgl,
               background: hero?.backgroundImage ? { id: hero.backgroundImage.id, url: hero.backgroundImage.url } : null,
+              backgroundType: hero?.youtubeUrl ? "youtube" : hero?.video ? "video" : "image",
+              video: hero?.video ? { id: hero.video.id, url: hero.video.url } : null,
+              youtubeUrl: hero?.youtubeUrl ?? "",
             }}
           />
         </div>

@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { parseYouTubeId } from "@/lib/youtube";
 
 export const heroSchema = z.object({
   headlineLine1: z.string().trim().min(1, "Informe a primeira linha."),
@@ -10,6 +11,16 @@ export const heroSchema = z.object({
   secondaryCtaTarget: z.string().trim().min(1),
   enableWebgl: z.boolean().optional(),
   backgroundImageId: z.string().trim().optional().or(z.literal("")),
+  backgroundType: z.enum(["image", "video", "youtube"]).default("image"),
+  videoId: z.string().trim().optional().or(z.literal("")),
+  youtubeUrl: z.string().trim().optional().or(z.literal("")),
+}).superRefine((data, ctx) => {
+  if (data.backgroundType === "video" && !data.videoId) {
+    ctx.addIssue({ code: "custom", path: ["videoId"], message: "Envie ou escolha um vídeo MP4." });
+  }
+  if (data.backgroundType === "youtube" && !parseYouTubeId(data.youtubeUrl ?? "")) {
+    ctx.addIssue({ code: "custom", path: ["youtubeUrl"], message: "Informe um link válido do YouTube." });
+  }
 });
 
 export const bioSchema = z.object({

@@ -2,7 +2,14 @@
 
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import { registerUploadedMedia } from "@/app/(admin)/admin/_actions/media";
-import { ALLOWED_IMAGE_MIME_TYPES, MAX_IMAGE_BYTES } from "@/lib/validations/media";
+import {
+  ALLOWED_IMAGE_MIME_TYPES,
+  ALLOWED_VIDEO_MIME_TYPES,
+  MAX_IMAGE_BYTES,
+  MAX_VIDEO_BYTES,
+} from "@/lib/validations/media";
+
+export type UploadKind = "image" | "video";
 
 export interface UploadResult {
   ok: boolean;
@@ -11,7 +18,13 @@ export interface UploadResult {
   error?: string;
 }
 
-function readImageDimensions(file: File): Promise<{ width: number; height: number }> {
+interface FileMetadata {
+  width: number;
+  height: number;
+  durationSec?: number;
+}
+
+function readImageDimensions(file: File): Promise<FileMetadata> {
   return new Promise((resolve, reject) => {
     const img = new Image();
     const objectUrl = URL.createObjectURL(file);
@@ -27,13 +40,37 @@ function readImageDimensions(file: File): Promise<{ width: number; height: numbe
   });
 }
 
+function readVideoMetadata(file: File): Promise<FileMetadata> {
+  return new Promise((resolve, reject) => {
+    const video = document.createElement("video");
+    const objectUrl = URL.createObjectURL(file);
+    video.preload = "metadata";
+    video.onloadedmetadata = () => {
+      URL.revokeObjectURL(objectUrl);
+      if (!video.videoWidth || !video.videoHeight) return reject(new Error("no video track"));
+      resolve({
+        width: video.videoWidth,
+        height: video.videoHeight,
+        durationSec: Number.isFinite(video.duration) ? Math.round(video.duration) : undefined,
+      });
+    };
+    video.onerror = () => {
+      URL.revokeObjectURL(objectUrl);
+      reject(new Error("Não foi possível ler o vídeo."));
+    };
+    video.src = objectUrl;
+  });
+}
+
 /** Client-side fast-feedback checks only — the real security boundary is server-side (see registerUploadedMedia). */
-function validateClientSide(file: File): string | null {
-  if (!ALLOWED_IMAGE_MIME_TYPES.includes(file.type as (typeof ALLOWED_IMAGE_MIME_TYPES)[number])) {
-    return "Formato não suportado. Use JPG, PNG, WEBP ou AVIF.";
+function validateClientSide(file: File, kind: UploadKind): string | null {
+  const allowed: readonly string[] = kind === "video" ? ALLOWED_VIDEO_MIME_TYPES : ALLOWED_IMAGE_MIME_TYPES;
+  const maxBytes = kind === "video" ? MAX_VIDEO_BYTES : MAX_IMAGE_BYTES;
+  if (!allowed.includes(file.type)) {
+    return kind === "video" ? "Formato não suportado. Use MP4." : "Formato não suportado. Use JPG, PNG, WEBP ou AVIF.";
   }
-  if (file.size > MAX_IMAGE_BYTES) {
-    return `Arquivo muito grande (máx. ${Math.round(MAX_IMAGE_BYTES / 1024 / 1024)}MB).`;
+  if (file.size > maxBytes) {
+    return `Arquivo muito grande (máx. ${Math.round(maxBytes / 1024 / 1024)}MB).`;
   }
   return null;
 }
@@ -41,16 +78,17 @@ function validateClientSide(file: File): string | null {
 export async function uploadFile(
   file: File,
   folder: string,
-  alt?: string
+  alt?: string,
+  kind: UploadKind = "image"
 ): Promise<UploadResult> {
-  const clientError = validateClientSide(file);
+  const clientError = validateClientSide(file, kind);
   if (clientError) return { ok: false, error: clientError };
 
-  let dimensions: { width: number; height: number };
+  let metadata: FileMetadata;
   try {
-    dimensions = await readImageDimensions(file);
+    metadata = kind === "video" ? await readVideoMetadata(file) : await readImageDimensions(file);
   } catch {
-    return { ok: false, error: "Não foi possível ler a imagem." };
+    return { ok: false, error: kind === "video" ? "Não foi possível ler o vídeo." : "Não foi possível ler a imagem." };
   }
 
   const signRes = await fetch("/api/admin/uploads/sign", {
@@ -79,12 +117,13 @@ export async function uploadFile(
   const result = await registerUploadedMedia({
     path: ticket.path,
     mimeType: file.type,
-    width: dimensions.width,
-    height: dimensions.height,
+    width: metadata.width,
+    height: metadata.height,
+    durationSec: metadata.durationSec,
     alt,
     folder,
   });
 
   if (!result.ok) return { ok: false, error: result.error };
-  return { ok: true, mediaId: result.id };
+  return { ok: true, mediaId: result.id, url: result.url };
 }

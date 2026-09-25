@@ -5,6 +5,7 @@ const EXTENSION_BY_MIME: Record<string, string> = {
   "image/png": "png",
   "image/webp": "webp",
   "image/avif": "avif",
+  "video/mp4": "mp4",
 };
 
 /** Never trusts the client-provided filename for the actual storage path — only for a readable, slugified suffix. */
