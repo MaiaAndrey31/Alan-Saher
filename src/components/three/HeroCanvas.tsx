@@ -2,7 +2,7 @@
 
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { useTexture } from "@react-three/drei";
-import { Suspense, useMemo, useRef, useEffect } from "react";
+import { Component, Suspense, useMemo, useRef, useEffect, type ReactNode } from "react";
 import * as THREE from "three";
 import { vertexShader, fragmentShader } from "./heroShader";
 
@@ -65,6 +65,26 @@ function RippleScene({ imageSrc }: { imageSrc: string }) {
   );
 }
 
+/**
+ * A failed texture load (or lost WebGL context) must only drop this layer —
+ * never bubble up and take the Hero down with it.
+ */
+class WebGLLayerBoundary extends Component<{ children: ReactNode }, { failed: boolean }> {
+  state = { failed: false };
+
+  static getDerivedStateFromError() {
+    return { failed: true };
+  }
+
+  componentDidCatch(error: unknown) {
+    console.warn("[HeroCanvas] WebGL layer disabled:", error);
+  }
+
+  render() {
+    return this.state.failed ? null : this.props.children;
+  }
+}
+
 interface HeroCanvasProps {
   imageSrc: string;
   active: boolean;
@@ -82,16 +102,18 @@ export default function HeroCanvas({ imageSrc, active }: HeroCanvasProps) {
   const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
 
   return (
-    <Canvas
-      dpr={dpr}
-      gl={{ antialias: true, alpha: true, powerPreference: "low-power" }}
-      camera={{ position: [0, 0, 5], fov: 50 }}
-      frameloop={active ? "always" : "never"}
-      className="!absolute inset-0"
-    >
-      <Suspense fallback={null}>
-        <RippleScene imageSrc={imageSrc} />
-      </Suspense>
-    </Canvas>
+    <WebGLLayerBoundary>
+      <Canvas
+        dpr={dpr}
+        gl={{ antialias: true, alpha: true, powerPreference: "low-power" }}
+        camera={{ position: [0, 0, 5], fov: 50 }}
+        frameloop={active ? "always" : "never"}
+        className="!absolute inset-0"
+      >
+        <Suspense fallback={null}>
+          <RippleScene imageSrc={imageSrc} />
+        </Suspense>
+      </Canvas>
+    </WebGLLayerBoundary>
   );
 }
