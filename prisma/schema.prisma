@@ -82,19 +82,19 @@ enum BookingRequestStatus {
 // ---------------------------------------------------------------------------
 
 model User {
-  id            String     @id @default(cuid())
-  name          String?
-  email         String     @unique
-  emailVerified DateTime?
-  image         String?
-  passwordHash  String?
-  role          Role       @default(EDITOR)
-  isActive      Boolean    @default(true)
-  failedLoginAttempts Int  @default(0)
-  lockedUntil   DateTime?
-  lastLoginAt   DateTime?
-  createdAt     DateTime   @default(now())
-  updatedAt     DateTime   @updatedAt
+  id                  String    @id @default(cuid())
+  name                String?
+  email               String    @unique
+  emailVerified       DateTime?
+  image               String?
+  passwordHash        String?
+  role                Role      @default(EDITOR)
+  isActive            Boolean   @default(true)
+  failedLoginAttempts Int       @default(0)
+  lockedUntil         DateTime?
+  lastLoginAt         DateTime?
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
 
   accounts      Account[]
   sessions      Session[]
@@ -160,7 +160,7 @@ model Media {
   blurDataUrl  String?   @db.Text
   alt          String?
   title        String?
-  /// Canonical values: hero | story | stages | narrative | experience |
+  /// Canonical values: hero | statement | story | stages | narrative | experience |
   /// gallery | releases | press | presskit | shows | general
   folder       String    @default("general")
   uploadedById String?
@@ -168,22 +168,23 @@ model Media {
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
 
-  heroBackgrounds   Hero[]             @relation("HeroBackground")
-  heroVideos        Hero[]             @relation("HeroVideo")
-  heroPosters       Hero[]             @relation("HeroPoster")
-  narrativeBgs      NarrativeSection[] @relation("NarrativeBackground")
-  timelineEvents    TimelineEvent[]
-  worldStageImages  WorldStage[]       @relation("StageImage")
-  worldStageVideos  WorldStage[]       @relation("StageVideo")
-  experienceFrames  ExperienceFrame[]
-  releaseCovers     Release[]
-  galleryItems      GalleryItem[]
-  pressLogos        PressItem[]
-  pressKitOneSheets PressKit[]         @relation("PressKitOneSheet")
-  pressKitPhotoPacks PressKit[]        @relation("PressKitPhotos")
-  pressKitLogoPacks PressKit[]         @relation("PressKitLogos")
-  seoOgImages       SeoSettings[]      @relation("SeoOgImage")
-  showImages        Show[]
+  heroBackgrounds    Hero[]             @relation("HeroBackground")
+  heroVideos         Hero[]             @relation("HeroVideo")
+  heroPosters        Hero[]             @relation("HeroPoster")
+  narrativeBgs       NarrativeSection[] @relation("NarrativeBackground")
+  statementBgs       StatementSection[] @relation("StatementBackground")
+  timelineEvents     TimelineEvent[]
+  worldStageImages   WorldStage[]       @relation("StageImage")
+  worldStageVideos   WorldStage[]       @relation("StageVideo")
+  experienceFrames   ExperienceFrame[]
+  releaseCovers      Release[]
+  galleryItems       GalleryItem[]
+  pressLogos         PressItem[]
+  pressKitOneSheets  PressKit[]         @relation("PressKitOneSheet")
+  pressKitPhotoPacks PressKit[]         @relation("PressKitPhotos")
+  pressKitLogoPacks  PressKit[]         @relation("PressKitLogos")
+  seoOgImages        SeoSettings[]      @relation("SeoOgImage")
+  showImages         Show[]
 
   @@index([kind, folder])
   @@index([createdAt])
@@ -229,11 +230,13 @@ model Hero {
 }
 
 model StatementSection {
-  id          String   @id @default("singleton")
-  lines       String[] @default(["From Minas", "to the", "World."])
-  accentIndex Int?     @default(2)
-  isVisible   Boolean  @default(true)
-  updatedAt   DateTime @updatedAt
+  id                String   @id @default("singleton")
+  lines             String[] @default(["From Minas", "to the", "World."])
+  accentIndex       Int?     @default(2)
+  backgroundImageId String?
+  backgroundImage   Media?   @relation("StatementBackground", fields: [backgroundImageId], references: [id], onDelete: Restrict)
+  isVisible         Boolean  @default(true)
+  updatedAt         DateTime @updatedAt
 }
 
 model StoryContent {

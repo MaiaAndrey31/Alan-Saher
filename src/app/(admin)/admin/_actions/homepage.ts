@@ -4,7 +4,7 @@ import { updateTag, revalidatePath } from "next/cache";
 import { requireRole } from "@/lib/auth/guards";
 import { prisma } from "@/lib/db";
 import { CACHE_TAGS } from "@/lib/content/tags";
-import { heroSchema, bioSchema } from "@/lib/validations/admin/homepage";
+import { heroSchema, bioSchema, statementBackgroundSchema } from "@/lib/validations/admin/homepage";
 import type { ActionState } from "@/lib/validations/admin/actionState";
 
 export async function updateHeroAction(_prev: ActionState, formData: FormData): Promise<ActionState> {
@@ -85,6 +85,30 @@ export async function updateBioAction(_prev: ActionState, formData: FormData): P
 
   updateTag(CACHE_TAGS.site);
   updateTag(CACHE_TAGS.presskit);
+  revalidatePath("/");
+  return { ok: true };
+}
+
+export async function updateStatementBackgroundAction(_prev: ActionState, formData: FormData): Promise<ActionState> {
+  await requireRole(["ADMIN", "EDITOR"]);
+
+  const parsed = statementBackgroundSchema.safeParse({ backgroundImageId: formData.get("backgroundImageId") ?? "" });
+  if (!parsed.success) return { ok: false, fieldErrors: parsed.error.flatten().fieldErrors };
+  const backgroundImageId = parsed.data.backgroundImageId || null;
+
+  if (backgroundImageId) {
+    const media = await prisma.media.findUnique({ where: { id: backgroundImageId }, select: { kind: true } });
+    if (!media || media.kind !== "IMAGE") return { ok: false, error: "Escolha uma imagem válida." };
+  }
+
+  // Lines/accent keep their schema defaults on first create — only the background is edited here.
+  await prisma.statementSection.upsert({
+    where: { id: "singleton" },
+    create: { id: "singleton", backgroundImageId },
+    update: { backgroundImageId },
+  });
+
+  updateTag(CACHE_TAGS.statement);
   revalidatePath("/");
   return { ok: true };
 }

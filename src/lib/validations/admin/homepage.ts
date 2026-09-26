@@ -26,3 +26,7 @@ export const heroSchema = z.object({
 export const bioSchema = z.object({
   bioFull: z.string().trim().min(1, "Informe a biografia completa."),
 });
+
+export const statementBackgroundSchema = z.object({
+  backgroundImageId: z.string().trim().optional().or(z.literal("")),
+});

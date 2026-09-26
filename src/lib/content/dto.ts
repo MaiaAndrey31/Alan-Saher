@@ -35,6 +35,7 @@ export interface HeroDto {
 export interface StatementDto {
   lines: string[];
   accentIndex: number | null;
+  backgroundUrl: string | null;
 }
 
 export interface MilestoneDto {

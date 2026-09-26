@@ -77,7 +77,7 @@ export default async function Home() {
       <Header artistName={site.artistName} navItems={navItems} />
       <main id="main-content">
         <Hero hero={hero} site={site} />
-        <Statement lines={statement.lines} accentIndex={statement.accentIndex} />
+        <Statement lines={statement.lines} accentIndex={statement.accentIndex} backgroundUrl={statement.backgroundUrl} />
         <Numbers startYear={site.startYear} stageYears={stages.filter((s) => s.showInNumbers).map((s) => ({ id: s.id, year: s.year }))} />
         <Story content={story.content} milestones={story.milestones} />
         <WorldStages stages={stages} />

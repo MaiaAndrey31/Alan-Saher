@@ -1,11 +1,13 @@
 import { prisma } from "@/lib/db";
 import { HeroForm } from "./HeroForm";
 import { BioForm } from "./BioForm";
+import { StatementForm } from "./StatementForm";
 
 export default async function HomepagePage() {
-  const [hero, site] = await Promise.all([
+  const [hero, site, statement] = await Promise.all([
     prisma.hero.findUnique({ where: { id: "singleton" }, include: { backgroundImage: true, video: true } }),
     prisma.siteSettings.findUnique({ where: { id: "singleton" } }),
+    prisma.statementSection.findUnique({ where: { id: "singleton" }, include: { backgroundImage: true } }),
   ]);
 
   return (
@@ -30,6 +32,15 @@ export default async function HomepagePage() {
               video: hero?.video ? { id: hero.video.id, url: hero.video.url } : null,
               youtubeUrl: hero?.youtubeUrl ?? "",
             }}
+          />
+        </div>
+      </section>
+
+      <section className="mt-12 border-t border-neutral-200 pt-8">
+        <h2 className="text-sm font-semibold uppercase tracking-wide text-neutral-500">Statement — From Minas to the World</h2>
+        <div className="mt-4">
+          <StatementForm
+            background={statement?.backgroundImage ? { id: statement.backgroundImage.id, url: statement.backgroundImage.url } : null}
           />
         </div>
       </section>

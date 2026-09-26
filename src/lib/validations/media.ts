@@ -24,6 +24,7 @@ export function maxBytesFor(mime: string): number {
 
 export const MEDIA_FOLDERS = [
   "hero",
+  "statement",
   "story",
   "stages",
   "narrative",
@@ -41,6 +42,7 @@ export type MediaFolder = (typeof MEDIA_FOLDERS)[number];
 /** Admin-facing names — each folder is the section of the site whose image picker opens on it. */
 export const MEDIA_FOLDER_LABELS: Record<MediaFolder, string> = {
   hero: "Hero (topo da página)",
+  statement: "Statement (From Minas to the World)",
   story: "Carreira — Linha do tempo",
   stages: "Carreira — Grandes Palcos",
   narrative: "Transição narrativa",
