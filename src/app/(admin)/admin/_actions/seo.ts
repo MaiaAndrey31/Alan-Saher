@@ -1,6 +1,6 @@
 "use server";
 
-import { revalidateTag, revalidatePath } from "next/cache";
+import { updateTag, revalidatePath } from "next/cache";
 import { requireRole } from "@/lib/auth/guards";
 import { prisma } from "@/lib/db";
 import { CACHE_TAGS } from "@/lib/content/tags";
@@ -41,7 +41,7 @@ export async function updateSeoSettingsAction(_prev: ActionState, formData: Form
     },
   });
 
-  revalidateTag(CACHE_TAGS.seo, "max");
+  updateTag(CACHE_TAGS.seo);
   revalidatePath("/");
   return { ok: true };
 }

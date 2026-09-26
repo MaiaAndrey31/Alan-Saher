@@ -1,7 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { revalidateTag, revalidatePath } from "next/cache";
+import { updateTag, revalidatePath } from "next/cache";
 import { requireRole } from "@/lib/auth/guards";
 import { prisma } from "@/lib/db";
 import { CACHE_TAGS } from "@/lib/content/tags";
@@ -55,7 +55,7 @@ async function upsertShow(id: string | null, formData: FormData): Promise<Action
     await prisma.show.create({ data: payload });
   }
 
-  revalidateTag(CACHE_TAGS.shows, "max");
+  updateTag(CACHE_TAGS.shows);
   revalidatePath("/");
   redirect("/admin/shows");
 }
@@ -71,6 +71,6 @@ export async function updateShowAction(id: string, _prev: ActionState, formData:
 export async function deleteShowAction(id: string) {
   await requireRole(["ADMIN", "EDITOR"]);
   await prisma.show.delete({ where: { id } });
-  revalidateTag(CACHE_TAGS.shows, "max");
+  updateTag(CACHE_TAGS.shows);
   revalidatePath("/");
 }

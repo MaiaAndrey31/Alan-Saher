@@ -1,7 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { revalidateTag, revalidatePath } from "next/cache";
+import { updateTag, revalidatePath } from "next/cache";
 import { requireRole } from "@/lib/auth/guards";
 import { prisma } from "@/lib/db";
 import { CACHE_TAGS } from "@/lib/content/tags";
@@ -39,7 +39,7 @@ async function upsertTimelineEvent(id: string | null, formData: FormData): Promi
     await prisma.timelineEvent.create({ data: { ...payload, sortOrder: (maxOrder._max.sortOrder ?? 0) + 1 } });
   }
 
-  revalidateTag(CACHE_TAGS.story, "max");
+  updateTag(CACHE_TAGS.story);
   revalidatePath("/");
   redirect("/admin/career?tab=timeline");
 }
@@ -55,7 +55,7 @@ export async function updateTimelineEventAction(id: string, _prev: ActionState, 
 export async function deleteTimelineEventAction(id: string) {
   await requireRole(["ADMIN", "EDITOR"]);
   await prisma.timelineEvent.delete({ where: { id } });
-  revalidateTag(CACHE_TAGS.story, "max");
+  updateTag(CACHE_TAGS.story);
   revalidatePath("/");
 }
 
@@ -71,7 +71,7 @@ export async function moveTimelineEventAction(id: string, direction: "up" | "dow
     prisma.timelineEvent.update({ where: { id: items[index].id }, data: { sortOrder: items[swapIndex].sortOrder } }),
     prisma.timelineEvent.update({ where: { id: items[swapIndex].id }, data: { sortOrder: items[index].sortOrder } }),
   ]);
-  revalidateTag(CACHE_TAGS.story, "max");
+  updateTag(CACHE_TAGS.story);
   revalidatePath("/");
 }
 
@@ -108,7 +108,7 @@ async function upsertWorldStage(id: string | null, formData: FormData): Promise<
     await prisma.worldStage.create({ data: { ...payload, sortOrder: (maxOrder._max.sortOrder ?? 0) + 1 } });
   }
 
-  revalidateTag(CACHE_TAGS.stages, "max");
+  updateTag(CACHE_TAGS.stages);
   revalidatePath("/");
   redirect("/admin/career?tab=stages");
 }
@@ -124,7 +124,7 @@ export async function updateWorldStageAction(id: string, _prev: ActionState, for
 export async function deleteWorldStageAction(id: string) {
   await requireRole(["ADMIN", "EDITOR"]);
   await prisma.worldStage.delete({ where: { id } });
-  revalidateTag(CACHE_TAGS.stages, "max");
+  updateTag(CACHE_TAGS.stages);
   revalidatePath("/");
 }
 
@@ -139,6 +139,6 @@ export async function moveWorldStageAction(id: string, direction: "up" | "down")
     prisma.worldStage.update({ where: { id: items[index].id }, data: { sortOrder: items[swapIndex].sortOrder } }),
     prisma.worldStage.update({ where: { id: items[swapIndex].id }, data: { sortOrder: items[index].sortOrder } }),
   ]);
-  revalidateTag(CACHE_TAGS.stages, "max");
+  updateTag(CACHE_TAGS.stages);
   revalidatePath("/");
 }

@@ -1,6 +1,6 @@
 "use server";
 
-import { revalidateTag, revalidatePath } from "next/cache";
+import { updateTag, revalidatePath } from "next/cache";
 import { requireRole } from "@/lib/auth/guards";
 import { prisma } from "@/lib/db";
 import { CACHE_TAGS } from "@/lib/content/tags";
@@ -25,7 +25,7 @@ export async function updateBookingSettingsAction(_prev: ActionState, formData: 
     update: { heading: data.heading, intro: data.intro, notifyEmail: data.notifyEmail || null, isFormEnabled: data.isFormEnabled ?? true },
   });
 
-  revalidateTag(CACHE_TAGS.booking, "max");
+  updateTag(CACHE_TAGS.booking);
   revalidatePath("/");
   return { ok: true };
 }

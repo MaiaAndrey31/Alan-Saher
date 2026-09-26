@@ -36,6 +36,29 @@ export const MEDIA_FOLDERS = [
   "general",
 ] as const;
 
+export type MediaFolder = (typeof MEDIA_FOLDERS)[number];
+
+/** Admin-facing names — each folder is the section of the site whose image picker opens on it. */
+export const MEDIA_FOLDER_LABELS: Record<MediaFolder, string> = {
+  hero: "Hero (topo da página)",
+  story: "Carreira — Linha do tempo",
+  stages: "Carreira — Grandes Palcos",
+  narrative: "Transição narrativa",
+  experience: "The Experience",
+  gallery: "Galeria",
+  releases: "Música — Lançamentos",
+  press: "Imprensa",
+  presskit: "Press Kit",
+  shows: "Agenda — Shows",
+  general: "Geral (sem seção)",
+};
+
+export const updateMediaMetaSchema = z.object({
+  alt: z.string().trim().max(300),
+  title: z.string().trim().max(200),
+  folder: z.enum(MEDIA_FOLDERS),
+});
+
 export const signUploadSchema = z
   .object({
     filename: z.string().trim().min(1).max(255),

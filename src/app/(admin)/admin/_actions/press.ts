@@ -1,7 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { revalidateTag, revalidatePath } from "next/cache";
+import { updateTag, revalidatePath } from "next/cache";
 import { requireRole } from "@/lib/auth/guards";
 import { prisma } from "@/lib/db";
 import { CACHE_TAGS } from "@/lib/content/tags";
@@ -43,7 +43,7 @@ async function upsertPressItem(id: string | null, formData: FormData): Promise<A
     await prisma.pressItem.create({ data: { ...payload, sortOrder: (maxOrder._max.sortOrder ?? 0) + 1 } });
   }
 
-  revalidateTag(CACHE_TAGS.press, "max");
+  updateTag(CACHE_TAGS.press);
   revalidatePath("/");
   redirect("/admin/press");
 }
@@ -59,6 +59,6 @@ export async function updatePressItemAction(id: string, _prev: ActionState, form
 export async function deletePressItemAction(id: string) {
   await requireRole(["ADMIN", "EDITOR"]);
   await prisma.pressItem.delete({ where: { id } });
-  revalidateTag(CACHE_TAGS.press, "max");
+  updateTag(CACHE_TAGS.press);
   revalidatePath("/");
 }

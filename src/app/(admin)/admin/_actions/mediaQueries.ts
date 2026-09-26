@@ -2,12 +2,14 @@
 
 import { requireRole } from "@/lib/auth/guards";
 import { prisma } from "@/lib/db";
+import { getMediaUsage } from "@/lib/content/media";
 
 export interface MediaListItem {
   id: string;
   url: string;
   kind: "IMAGE" | "VIDEO" | "DOCUMENT";
   alt: string | null;
+  title: string | null;
   folder: string;
   width: number | null;
   height: number | null;
@@ -35,10 +37,18 @@ export async function listMedia(params: { folder?: string; search?: string; kind
     url: row.url,
     kind: row.kind,
     alt: row.alt,
+    title: row.title,
     folder: row.folder,
     width: row.width,
     height: row.height,
     sizeBytes: row.sizeBytes,
     createdAt: row.createdAt.toISOString(),
   }));
+}
+
+/** Where a media file is currently shown on the site — displayed in the library's edit dialog. */
+export async function getMediaUsageLabels(id: string): Promise<string[]> {
+  await requireRole(["ADMIN", "EDITOR"]);
+  const usage = await getMediaUsage(id);
+  return usage.usedIn;
 }

@@ -1,6 +1,6 @@
 "use server";
 
-import { revalidateTag, revalidatePath } from "next/cache";
+import { updateTag, revalidatePath } from "next/cache";
 import { requireRole } from "@/lib/auth/guards";
 import { prisma } from "@/lib/db";
 import { CACHE_TAGS } from "@/lib/content/tags";
@@ -30,7 +30,7 @@ export async function addGalleryItem(mediaId: string, alt: string) {
     },
   });
 
-  revalidateTag(CACHE_TAGS.gallery, "max");
+  updateTag(CACHE_TAGS.gallery);
   revalidatePath("/");
   return { id: item.id };
 }
@@ -38,20 +38,20 @@ export async function addGalleryItem(mediaId: string, alt: string) {
 export async function updateGalleryItem(id: string, data: { alt?: string; caption?: string; status?: "DRAFT" | "PUBLISHED" }) {
   await requireRole(["ADMIN", "EDITOR"]);
   await prisma.galleryItem.update({ where: { id }, data });
-  revalidateTag(CACHE_TAGS.gallery, "max");
+  updateTag(CACHE_TAGS.gallery);
   revalidatePath("/");
 }
 
 export async function deleteGalleryItem(id: string) {
   await requireRole(["ADMIN", "EDITOR"]);
   await prisma.galleryItem.delete({ where: { id } });
-  revalidateTag(CACHE_TAGS.gallery, "max");
+  updateTag(CACHE_TAGS.gallery);
   revalidatePath("/");
 }
 
 export async function reorderGalleryItems(orderedIds: string[]) {
   await requireRole(["ADMIN", "EDITOR"]);
   await prisma.$transaction(orderedIds.map((id, index) => prisma.galleryItem.update({ where: { id }, data: { sortOrder: index } })));
-  revalidateTag(CACHE_TAGS.gallery, "max");
+  updateTag(CACHE_TAGS.gallery);
   revalidatePath("/");
 }

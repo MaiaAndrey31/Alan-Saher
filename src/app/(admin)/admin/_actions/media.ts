@@ -1,13 +1,13 @@
 "use server";
 
 import { fileTypeFromBuffer } from "file-type";
-import { revalidateTag, revalidatePath } from "next/cache";
+import { updateTag, revalidatePath } from "next/cache";
 import { requireRole } from "@/lib/auth/guards";
 import { prisma } from "@/lib/db";
 import { storage } from "@/lib/storage";
 import { CACHE_TAGS } from "@/lib/content/tags";
 import { getMediaUsage } from "@/lib/content/media";
-import { registerMediaSchema, ALLOWED_IMAGE_MIME_TYPES, ALLOWED_VIDEO_MIME_TYPES, isVideoMime, maxBytesFor } from "@/lib/validations/media";
+import { registerMediaSchema, updateMediaMetaSchema, ALLOWED_IMAGE_MIME_TYPES, ALLOWED_VIDEO_MIME_TYPES, isVideoMime, maxBytesFor } from "@/lib/validations/media";
 
 type ActionResult = { ok: true; id: string; url: string } | { ok: false; error: string };
 
@@ -67,16 +67,26 @@ export async function registerUploadedMedia(input: unknown): Promise<ActionResul
     },
   });
 
-  revalidateTag(CACHE_TAGS.media, "max");
+  updateTag(CACHE_TAGS.media);
   return { ok: true, id: media.id, url: media.url };
 }
 
-export async function updateMediaMeta(id: string, data: { alt?: string; title?: string; folder?: string }) {
+export async function updateMediaMeta(id: string, input: unknown): Promise<{ ok: true } | { ok: false; error: string }> {
   await requireRole(["ADMIN", "EDITOR"]);
-  await prisma.media.update({ where: { id }, data });
-  revalidateTag(CACHE_TAGS.media, "max");
-  revalidateTag(CACHE_TAGS.all, "max");
+
+  const parsed = updateMediaMetaSchema.safeParse(input);
+  if (!parsed.success) return { ok: false, error: "Dados inválidos." };
+  const { alt, title, folder } = parsed.data;
+
+  const exists = await prisma.media.findUnique({ where: { id }, select: { id: true } });
+  if (!exists) return { ok: false, error: "Arquivo não encontrado." };
+
+  await prisma.media.update({ where: { id }, data: { alt: alt || null, title: title || null, folder } });
+  // alt text is rendered on the public site wherever this image is used.
+  updateTag(CACHE_TAGS.media);
+  updateTag(CACHE_TAGS.all);
   revalidatePath("/");
+  return { ok: true };
 }
 
 export async function deleteMedia(id: string): Promise<{ ok: boolean; error?: string; usedIn?: string[] }> {
@@ -93,6 +103,6 @@ export async function deleteMedia(id: string): Promise<{ ok: boolean; error?: st
   await prisma.media.delete({ where: { id } });
   await storage.delete([media.path]);
 
-  revalidateTag(CACHE_TAGS.media, "max");
+  updateTag(CACHE_TAGS.media);
   return { ok: true };
 }

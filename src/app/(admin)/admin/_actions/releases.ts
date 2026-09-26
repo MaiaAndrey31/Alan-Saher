@@ -1,7 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { revalidateTag, revalidatePath } from "next/cache";
+import { updateTag, revalidatePath } from "next/cache";
 import { requireRole } from "@/lib/auth/guards";
 import { prisma } from "@/lib/db";
 import { CACHE_TAGS } from "@/lib/content/tags";
@@ -45,7 +45,7 @@ async function upsertRelease(id: string | null, formData: FormData): Promise<Act
     await prisma.release.create({ data: { ...payload, sortOrder: (maxOrder._max.sortOrder ?? 0) + 1 } });
   }
 
-  revalidateTag(CACHE_TAGS.releases, "max");
+  updateTag(CACHE_TAGS.releases);
   revalidatePath("/");
   redirect("/admin/releases");
 }
@@ -61,6 +61,6 @@ export async function updateReleaseAction(id: string, _prev: ActionState, formDa
 export async function deleteReleaseAction(id: string) {
   await requireRole(["ADMIN", "EDITOR"]);
   await prisma.release.delete({ where: { id } });
-  revalidateTag(CACHE_TAGS.releases, "max");
+  updateTag(CACHE_TAGS.releases);
   revalidatePath("/");
 }

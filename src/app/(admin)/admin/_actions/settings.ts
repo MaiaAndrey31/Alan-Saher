@@ -1,6 +1,6 @@
 "use server";
 
-import { revalidateTag, revalidatePath } from "next/cache";
+import { updateTag, revalidatePath } from "next/cache";
 import { requireRole } from "@/lib/auth/guards";
 import { prisma } from "@/lib/db";
 import { CACHE_TAGS } from "@/lib/content/tags";
@@ -44,7 +44,7 @@ export async function updateSiteIdentityAction(_prev: ActionState, formData: For
     },
   });
 
-  revalidateTag(CACHE_TAGS.site, "max");
+  updateTag(CACHE_TAGS.site);
   revalidatePath("/");
   return { ok: true };
 }
@@ -66,7 +66,7 @@ export async function upsertSocialLinkAction(_prev: ActionState, formData: FormD
     update: { label: data.label, url: data.url, isConfigured: true },
   });
 
-  revalidateTag(CACHE_TAGS.social, "max");
+  updateTag(CACHE_TAGS.social);
   revalidatePath("/");
   return { ok: true };
 }
@@ -77,6 +77,6 @@ export async function disableSocialLinkAction(platform: SocialPlatform) {
     where: { platform },
     data: { isConfigured: false, url: "#" },
   });
-  revalidateTag(CACHE_TAGS.social, "max");
+  updateTag(CACHE_TAGS.social);
   revalidatePath("/");
 }

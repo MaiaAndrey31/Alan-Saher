@@ -1,6 +1,6 @@
 "use server";
 
-import { revalidateTag, revalidatePath } from "next/cache";
+import { updateTag, revalidatePath } from "next/cache";
 import { requireRole } from "@/lib/auth/guards";
 import { prisma } from "@/lib/db";
 import { CACHE_TAGS } from "@/lib/content/tags";
@@ -60,7 +60,7 @@ export async function updateHeroAction(_prev: ActionState, formData: FormData): 
     },
   });
 
-  revalidateTag(CACHE_TAGS.hero, "max");
+  updateTag(CACHE_TAGS.hero);
   revalidatePath("/");
   return { ok: true };
 }
@@ -83,8 +83,8 @@ export async function updateBioAction(_prev: ActionState, formData: FormData): P
     update: { bioFull: parsed.data.bioFull },
   });
 
-  revalidateTag(CACHE_TAGS.site, "max");
-  revalidateTag(CACHE_TAGS.presskit, "max");
+  updateTag(CACHE_TAGS.site);
+  updateTag(CACHE_TAGS.presskit);
   revalidatePath("/");
   return { ok: true };
 }

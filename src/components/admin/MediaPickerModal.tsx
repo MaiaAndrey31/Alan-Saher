@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, useTransition } from "react";
 import Image from "next/image";
 import { listMedia, type MediaListItem } from "@/app/(admin)/admin/_actions/mediaQueries";
 import { uploadFile, type UploadKind } from "@/lib/uploadFile";
+import { MEDIA_FOLDERS, MEDIA_FOLDER_LABELS } from "@/lib/validations/media";
 
 interface MediaPickerModalProps {
   folder: string;
@@ -14,6 +15,10 @@ interface MediaPickerModalProps {
 
 export function MediaPickerModal({ folder, kind = "image", onSelect, onClose }: MediaPickerModalProps) {
   const [items, setItems] = useState<MediaListItem[]>([]);
+  // Opens on the section's own category, but any category can be browsed —
+  // an image filed under "Galeria" can still be used in the timeline, etc.
+  const [filterFolder, setFilterFolder] = useState<string>(folder);
+  const [search, setSearch] = useState("");
   const [isLoading, startTransition] = useTransition();
   const [isUploading, setIsUploading] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
@@ -21,12 +26,13 @@ export function MediaPickerModal({ folder, kind = "image", onSelect, onClose }: 
 
   const load = () => {
     startTransition(async () => {
-      const results = await listMedia({ folder, kind: kind === "video" ? "VIDEO" : "IMAGE" });
+      const results = await listMedia({ folder: filterFolder, search: search || undefined, kind: kind === "video" ? "VIDEO" : "IMAGE" });
       setItems(results);
     });
   };
 
-  useEffect(load, [folder, kind]);
+   
+  useEffect(load, [filterFolder, search, kind]);
 
   const handleFiles = async (files: FileList | null) => {
     if (!files || files.length === 0) return;
@@ -68,6 +74,28 @@ export function MediaPickerModal({ folder, kind = "image", onSelect, onClose }: 
             onChange={(e) => handleFiles(e.target.files)}
           />
           {uploadError && <span className="text-xs text-red-600">{uploadError}</span>}
+          <div className="ml-auto flex flex-wrap items-center gap-2">
+            <input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Buscar…"
+              aria-label="Buscar por descrição"
+              className="w-32 rounded-md border border-neutral-300 px-2 py-1.5 text-xs outline-none focus:border-neutral-900"
+            />
+            <select
+              value={filterFolder}
+              onChange={(e) => setFilterFolder(e.target.value)}
+              aria-label="Categoria"
+              className="rounded-md border border-neutral-300 px-2 py-1.5 text-xs outline-none focus:border-neutral-900"
+            >
+              <option value="all">Todas as categorias</option>
+              {MEDIA_FOLDERS.map((f) => (
+                <option key={f} value={f}>
+                  {MEDIA_FOLDER_LABELS[f]}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
 
         <div
@@ -82,7 +110,7 @@ export function MediaPickerModal({ folder, kind = "image", onSelect, onClose }: 
             <p className="text-sm text-neutral-500">Carregando…</p>
           ) : items.length === 0 ? (
             <p className="text-sm text-neutral-500">
-              {kind === "video" ? "Nenhum vídeo" : "Nenhuma imagem"} nesta categoria ainda. Envie a primeira acima ou arraste um arquivo aqui.
+              {kind === "video" ? "Nenhum vídeo" : "Nenhuma imagem"} encontrado aqui. Envie um arquivo acima, arraste para cá ou escolha “Todas as categorias”.
             </p>
           ) : (
             <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 md:grid-cols-5">
@@ -90,6 +118,7 @@ export function MediaPickerModal({ folder, kind = "image", onSelect, onClose }: 
                 <button
                   key={item.id}
                   onClick={() => onSelect({ id: item.id, url: item.url })}
+                  title={item.alt ?? undefined}
                   className="relative aspect-square overflow-hidden rounded-md border border-neutral-200 hover:ring-2 hover:ring-neutral-900"
                 >
                   {item.kind === "VIDEO" ? (
