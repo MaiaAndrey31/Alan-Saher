@@ -156,7 +156,7 @@ export function MediaLibraryClient({ initialItems }: { initialItems: MediaListIt
                 {item.width}×{item.height} · {formatSize(item.sizeBytes)}
               </p>
               <div className="mt-2 flex items-center justify-between">
-                <button onClick={() => setEditing(item)} className="text-[11px] font-medium text-neutral-700 hover:text-neutral-900">
+                <button type="button" onClick={() => setEditing(item)} className="text-[11px] font-medium text-neutral-700 hover:text-neutral-900">
                   Editar
                 </button>
                 <DeleteButton

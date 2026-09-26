@@ -53,13 +53,13 @@ export function MediaPickerModal({ folder, kind = "image", onSelect, onClose }: 
       <div className="flex max-h-[80vh] w-full max-w-3xl flex-col overflow-hidden rounded-lg bg-white shadow-xl">
         <div className="flex items-center justify-between border-b border-neutral-200 px-5 py-4">
           <p className="text-sm font-medium">{kind === "video" ? "Escolher vídeo" : "Escolher imagem"}</p>
-          <button onClick={onClose} className="text-neutral-500 hover:text-neutral-900" aria-label="Fechar">
+          <button type="button" onClick={onClose} className="text-neutral-500 hover:text-neutral-900" aria-label="Fechar">
             Fechar
           </button>
         </div>
 
         <div className="flex items-center gap-3 border-b border-neutral-200 px-5 py-3">
-          <button
+          <button type="button"
             onClick={() => fileInputRef.current?.click()}
             disabled={isUploading}
             className="rounded-md bg-neutral-900 px-4 py-2 text-xs font-medium text-white disabled:opacity-50"
@@ -78,6 +78,10 @@ export function MediaPickerModal({ folder, kind = "image", onSelect, onClose }: 
             <input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
+              // This modal renders inside the host <form>: Enter here must not submit it.
+              onKeyDown={(e) => {
+                if (e.key === "Enter") e.preventDefault();
+              }}
               placeholder="Buscar…"
               aria-label="Buscar por descrição"
               className="w-32 rounded-md border border-neutral-300 px-2 py-1.5 text-xs outline-none focus:border-neutral-900"
@@ -115,7 +119,7 @@ export function MediaPickerModal({ folder, kind = "image", onSelect, onClose }: 
           ) : (
             <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 md:grid-cols-5">
               {items.map((item) => (
-                <button
+                <button type="button"
                   key={item.id}
                   onClick={() => onSelect({ id: item.id, url: item.url })}
                   title={item.alt ?? undefined}
@@ -133,7 +137,7 @@ export function MediaPickerModal({ folder, kind = "image", onSelect, onClose }: 
         </div>
 
         <div className="flex justify-end border-t border-neutral-200 px-5 py-3">
-          <button onClick={onClose} className="text-xs text-neutral-500 hover:text-neutral-900">
+          <button type="button" onClick={onClose} className="text-xs text-neutral-500 hover:text-neutral-900">
             Cancelar
           </button>
         </div>

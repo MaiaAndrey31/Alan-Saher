@@ -72,7 +72,7 @@ export function MediaEditDialog({ item, onClose, onSaved }: MediaEditDialogProps
           <p id="media-edit-title" className="text-sm font-medium">
             Editar {item.kind === "VIDEO" ? "vídeo" : "imagem"}
           </p>
-          <button onClick={onClose} className="text-sm text-neutral-500 hover:text-neutral-900">
+          <button type="button" onClick={onClose} className="text-sm text-neutral-500 hover:text-neutral-900">
             Fechar
           </button>
         </div>
