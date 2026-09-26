@@ -5,6 +5,7 @@ import { getSeoSettings } from "@/lib/content/seo";
 import { SmoothScrollProvider } from "@/components/SmoothScrollProvider";
 import { CustomCursor } from "@/components/CustomCursor";
 import { AppReadyProvider } from "@/hooks/useAppReady";
+import { LocaleProvider } from "@/i18n/LocaleProvider";
 
 import { siteUrl } from "@/lib/siteUrl";
 
@@ -55,12 +56,14 @@ export default function SiteLayout({ children }: { children: ReactNode }) {
       >
         Skip to content
       </a>
-      <AppReadyProvider>
-        <SmoothScrollProvider>
-          <CustomCursor />
-          {children}
-        </SmoothScrollProvider>
-      </AppReadyProvider>
+      <LocaleProvider>
+        <AppReadyProvider>
+          <SmoothScrollProvider>
+            <CustomCursor />
+            {children}
+          </SmoothScrollProvider>
+        </AppReadyProvider>
+      </LocaleProvider>
     </div>
   );
 }

@@ -3,7 +3,6 @@
 import { useRef } from "react";
 import { useGSAP } from "@gsap/react";
 import { gsap } from "@/lib/gsap";
-import { useInView } from "@/hooks/useInView";
 import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 
 interface CountUpProps {
@@ -11,36 +10,46 @@ interface CountUpProps {
   suffix?: string;
   className?: string;
   duration?: number;
+  /** Minimum digits (e.g. 2 → "00", "08", "17"…). */
+  pad?: number;
 }
 
-export function CountUp({ to, suffix = "", className, duration = 1.6 }: CountUpProps) {
-  const [ref, isInView] = useInView<HTMLSpanElement>({ threshold: 0.4 });
+/**
+ * Counts from zero the first time it enters the viewport. Driven by a
+ * one-shot ScrollTrigger (no IntersectionObserver re-renders), writes to the
+ * DOM directly, and uses tabular figures so the width never jitters.
+ */
+export function CountUp({ to, suffix = "", className, duration = 2, pad = 1 }: CountUpProps) {
+  const ref = useRef<HTMLSpanElement>(null);
   const prefersReducedMotion = usePrefersReducedMotion();
-  const hasPlayedRef = useRef(false);
+  const format = (value: number) => `${String(Math.round(value)).padStart(pad, "0")}${suffix}`;
 
-  useGSAP(() => {
-    if (!isInView || hasPlayedRef.current || !ref.current) return;
-    hasPlayedRef.current = true;
-
-    if (prefersReducedMotion) {
-      ref.current.textContent = `${to}${suffix}`;
-      return;
-    }
-
-    const counter = { value: 0 };
-    gsap.to(counter, {
-      value: to,
-      duration,
-      ease: "expo.out",
-      onUpdate: () => {
-        if (ref.current) ref.current.textContent = `${Math.floor(counter.value)}${suffix}`;
-      },
-    });
-  }, [isInView]);
+  useGSAP(
+    () => {
+      const el = ref.current;
+      if (!el) return;
+      if (prefersReducedMotion) {
+        el.textContent = format(to);
+        return;
+      }
+      const counter = { value: 0 };
+      el.textContent = format(0);
+      gsap.to(counter, {
+        value: to,
+        duration,
+        ease: "power3.out",
+        onUpdate: () => {
+          el.textContent = format(counter.value);
+        },
+        scrollTrigger: { trigger: el, start: "top 85%", once: true },
+      });
+    },
+    { dependencies: [to, prefersReducedMotion], revertOnUpdate: true }
+  );
 
   return (
-    <span ref={ref} className={className}>
-      0{suffix}
+    <span ref={ref} className={`tabular ${className ?? ""}`}>
+      {format(to)}
     </span>
   );
 }

@@ -3,27 +3,54 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRef, useState } from "react";
+import { useGSAP } from "@gsap/react";
+import { gsap } from "@/lib/gsap";
 import { bookingSchema, type BookingSchema } from "@/lib/validations/booking";
 import type { BookingSettingsDto } from "@/lib/content/dto";
-import { Reveal } from "@/components/Reveal";
 import { MagneticButton } from "@/components/MagneticButton";
 import { track } from "@/lib/analytics";
+import { useLocale } from "@/i18n/LocaleProvider";
+import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 
 const FIELDS: {
-  name: keyof BookingSchema;
-  label: string;
+  name: Exclude<keyof BookingSchema, "message">;
   type?: string;
   half?: boolean;
   required?: boolean;
+  autoComplete?: string;
 }[] = [
-  { name: "name", label: "Name", required: true, half: true },
-  { name: "company", label: "Company", half: true },
-  { name: "whatsapp", label: "WhatsApp", required: true, half: true },
-  { name: "email", label: "Email", type: "email", required: true, half: true },
-  { name: "city", label: "City", required: true, half: true },
-  { name: "eventType", label: "Event type", required: true, half: true },
-  { name: "eventDate", label: "Event date", type: "date", half: true },
+  { name: "name", required: true, half: true, autoComplete: "name" },
+  { name: "company", half: true, autoComplete: "organization" },
+  { name: "whatsapp", type: "tel", required: true, half: true, autoComplete: "tel" },
+  { name: "email", type: "email", required: true, half: true, autoComplete: "email" },
+  { name: "city", required: true, half: true, autoComplete: "address-level2" },
+  { name: "eventType", required: true, half: true },
+  { name: "eventDate", type: "date", half: true },
 ];
+
+/** Splits a headline into two visually balanced lines for the mask reveal. */
+function balance(text: string): string[] {
+  const words = text.split(/\s+/);
+  if (words.length < 3) return [text];
+  let best = 1;
+  let bestDiff = Infinity;
+  for (let i = 1; i < words.length; i++) {
+    const diff = Math.abs(words.slice(0, i).join(" ").length - words.slice(i).join(" ").length);
+    if (diff < bestDiff) {
+      bestDiff = diff;
+      best = i;
+    }
+  }
+  return [words.slice(0, best).join(" "), words.slice(best).join(" ")];
+}
+
+// Bottom-rule fields: the label warms and a bronze line draws in on focus.
+const labelCls =
+  "block text-xs uppercase tracking-[0.2em] text-fg-muted transition-colors duration-300 group-focus-within/field:text-accent";
+const inputCls =
+  "peer mt-2 w-full border-b border-border bg-transparent py-3 text-fg outline-none transition-colors duration-300 hover:border-fg/40 aria-[invalid=true]:border-red-400/70";
+const focusLine =
+  "pointer-events-none absolute bottom-0 left-0 h-px w-full origin-left scale-x-0 bg-accent transition-transform duration-500 ease-[var(--ease-out-expo)] peer-focus:scale-x-100";
 
 export function Booking({ settings }: { settings: BookingSettingsDto }) {
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
@@ -36,6 +63,26 @@ export function Booking({ settings }: { settings: BookingSettingsDto }) {
   } = useForm<BookingSchema>({ resolver: zodResolver(bookingSchema) });
 
   const honeypotRef = useRef<HTMLInputElement>(null);
+  const sectionRef = useRef<HTMLElement>(null);
+  const { t, tc } = useLocale();
+  const reduced = usePrefersReducedMotion();
+  const headingLines = balance(tc(settings.heading));
+
+  // The calm chapter: one headline reveal, one soft entrance for the form — then stillness.
+  useGSAP(
+    () => {
+      if (!sectionRef.current || reduced) return;
+      const trigger = { trigger: sectionRef.current, start: "top 70%", once: true };
+      gsap.fromTo(".bk-line", { yPercent: 110, y: 0 }, { yPercent: 0, duration: 1.3, stagger: 0.12, ease: "expo.out", scrollTrigger: trigger });
+      gsap.fromTo(".bk-fade", { autoAlpha: 0, y: 20 }, { autoAlpha: 1, y: 0, duration: 1.1, stagger: 0.1, delay: 0.35, ease: "expo.out", scrollTrigger: trigger });
+    },
+    { scope: sectionRef, dependencies: [reduced], revertOnUpdate: true }
+  );
+
+  const errorText = (name: keyof BookingSchema) => {
+    const message = errors[name]?.message;
+    return typeof message === "string" ? tc(message) : undefined;
+  };
 
   const onSubmit = async (data: BookingSchema) => {
     setStatus("loading");
@@ -63,28 +110,34 @@ export function Booking({ settings }: { settings: BookingSettingsDto }) {
   };
 
   return (
-    <section id="booking" aria-label="Booking" className="relative border-t border-border py-[var(--section-padding-y)]">
+    <section id="booking" ref={sectionRef} aria-label={tc(settings.eyebrow)} className="relative border-t border-border py-[var(--section-padding-y)]">
       <div className="container-edit grid grid-cols-1 gap-16 lg:grid-cols-12">
-        <Reveal className="lg:col-span-5">
-          <span className="text-xs uppercase tracking-[0.3em] text-fg-muted">{settings.eyebrow}</span>
-          <h2 className="mt-4 font-display leading-[0.95] tracking-tight" style={{ fontSize: "var(--font-size-h2)" }}>
-            {settings.heading}
+        <div className="lg:col-span-5">
+          <span className="bk-fade eyebrow block">{tc(settings.eyebrow)}</span>
+          <h2 className="mt-4 font-display uppercase leading-[0.95] tracking-tight" style={{ fontSize: "var(--font-size-h2)" }}>
+            {headingLines.map((line, i) => (
+              <span key={i} className="line-mask">
+                <span className="bk-line">{line}</span>
+              </span>
+            ))}
           </h2>
-          <p className="mt-6 max-w-sm text-sm text-fg-muted">{settings.intro}</p>
-        </Reveal>
+          <p className="bk-fade mt-6 max-w-sm text-fg-muted" style={{ fontSize: "var(--font-size-body)" }}>
+            {tc(settings.intro)}
+          </p>
+        </div>
 
-        <div className="lg:col-span-7">
+        <div className="bk-fade lg:col-span-7">
           {!settings.isFormEnabled ? (
-            <p className="text-sm text-fg-muted">Booking requests are temporarily paused. Please check back soon.</p>
+            <p className="text-fg-muted">{t.booking.paused}</p>
           ) : status === "success" ? (
-            <div role="status" className="border border-border p-10 text-center">
-              <p className="font-display text-2xl">{settings.successTitle}</p>
-              <p className="mt-3 text-sm text-fg-muted">{settings.successMessage}</p>
-              <button
-                onClick={() => setStatus("idle")}
-                className="mt-6 text-xs uppercase tracking-[0.25em] text-accent"
-              >
-                Send another request
+            <div role="status" className="relative border border-border p-10 md:p-14">
+              <span aria-hidden="true" className="bk-draw absolute left-0 top-0 h-px w-full origin-left bg-accent" />
+              <p className="font-display text-2xl uppercase tracking-tight md:text-3xl">{tc(settings.successTitle)}</p>
+              <p className="mt-3 text-fg-muted">{tc(settings.successMessage)}</p>
+              <button onClick={() => setStatus("idle")} className="mt-8 flex min-h-11 items-center gap-3 text-xs uppercase tracking-[0.25em] text-accent">
+                <span className="text-roll" data-text={t.booking.sendAnother}>
+                  <span>{t.booking.sendAnother}</span>
+                </span>
               </button>
             </div>
           ) : (
@@ -94,51 +147,60 @@ export function Booking({ settings }: { settings: BookingSettingsDto }) {
                 <input ref={honeypotRef} type="text" name="company_website" tabIndex={-1} autoComplete="off" />
               </div>
               {FIELDS.map((field) => (
-                <div key={field.name} className={field.half ? "sm:col-span-1" : "sm:col-span-2"}>
-                  <label htmlFor={field.name} className="block text-xs uppercase tracking-[0.2em] text-fg-muted">
-                    {field.label} {field.required && <span aria-hidden="true">*</span>}
+                <div key={field.name} className={`group/field ${field.half ? "sm:col-span-1" : "sm:col-span-2"}`}>
+                  <label htmlFor={field.name} className={labelCls}>
+                    {t.booking.fields[field.name]} {field.required && <span aria-hidden="true">*</span>}
                   </label>
-                  <input
-                    id={field.name}
-                    type={field.type ?? "text"}
-                    aria-invalid={!!errors[field.name]}
-                    aria-describedby={errors[field.name] ? `${field.name}-error` : undefined}
-                    className="mt-2 w-full border-b border-border bg-transparent py-2 text-fg outline-none transition-colors focus:border-accent"
-                    {...register(field.name)}
-                  />
+                  <div className="relative">
+                    <input
+                      id={field.name}
+                      type={field.type ?? "text"}
+                      autoComplete={field.autoComplete}
+                      aria-required={field.required || undefined}
+                      aria-invalid={!!errors[field.name]}
+                      aria-describedby={errors[field.name] ? `${field.name}-error` : undefined}
+                      className={inputCls}
+                      {...register(field.name)}
+                    />
+                    <span aria-hidden="true" className={focusLine} />
+                  </div>
                   {errors[field.name] && (
-                    <p id={`${field.name}-error`} className="mt-1 text-xs text-red-400">
-                      {errors[field.name]?.message as string}
+                    <p id={`${field.name}-error`} className="mt-2 text-xs text-red-400">
+                      {errorText(field.name)}
                     </p>
                   )}
                 </div>
               ))}
 
-              <div className="sm:col-span-2">
-                <label htmlFor="message" className="block text-xs uppercase tracking-[0.2em] text-fg-muted">
-                  Message
+              <div className="group/field sm:col-span-2">
+                <label htmlFor="message" className={labelCls}>
+                  {t.booking.fields.message}
                 </label>
-                <textarea
-                  id="message"
-                  rows={4}
-                  className="mt-2 w-full resize-none border-b border-border bg-transparent py-2 text-fg outline-none transition-colors focus:border-accent"
-                  {...register("message")}
-                />
+                <div className="relative">
+                  <textarea id="message" rows={4} className={`${inputCls} resize-none`} {...register("message")} />
+                  <span aria-hidden="true" className={focusLine} />
+                </div>
               </div>
 
               <div className="sm:col-span-2">
                 {status === "error" && (
-                  <p role="alert" className="mb-4 text-sm text-red-400">
-                    Something went wrong sending your request. Please try again.
+                  <p role="alert" className="mb-5 border-l border-red-400/70 pl-4 text-sm text-red-300">
+                    {t.booking.error}
                   </p>
                 )}
-                <MagneticButton>
+                <MagneticButton strength={0.15} className="inline-block">
                   <button
                     type="submit"
                     disabled={status === "loading"}
-                    className="border border-fg px-8 py-3 text-xs uppercase tracking-[0.25em] transition-colors hover:bg-fg hover:text-bg disabled:opacity-50"
+                    aria-busy={status === "loading"}
+                    className="group relative flex min-h-12 items-center gap-4 overflow-hidden border border-fg px-8 py-3 text-xs uppercase tracking-[0.25em] transition-colors duration-500 hover:text-bg disabled:cursor-wait disabled:opacity-60"
                   >
-                    {status === "loading" ? "Sending…" : "Request Booking"}
+                    {/* Fill wipes in from the left on hover. */}
+                    <span aria-hidden="true" className="absolute inset-0 origin-left scale-x-0 bg-fg transition-transform duration-500 ease-[var(--ease-out-expo)] group-hover:scale-x-100 group-disabled:scale-x-0" />
+                    <span className="relative">{status === "loading" ? t.booking.sending : t.booking.submit}</span>
+                    <span aria-hidden="true" className="relative transition-transform duration-500 ease-[var(--ease-out-expo)] group-hover:translate-x-1">
+                      {status === "loading" ? <span className="inline-block size-3 animate-spin rounded-full border border-current border-t-transparent" /> : "→"}
+                    </span>
                   </button>
                 </MagneticButton>
               </div>

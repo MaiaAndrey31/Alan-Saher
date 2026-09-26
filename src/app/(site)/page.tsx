@@ -83,7 +83,7 @@ export default async function Home() {
         <WorldStages stages={stages} />
         <NarrativeTransition {...narrative} />
         <Experience {...experience} />
-        <Music releases={releases} socialLinks={social} />
+        <Music releases={releases} socialLinks={social} artistName={site.artistName} startYear={site.startYear} />
         <Gallery items={gallery} />
         <Press items={press} />
         <PressKit pressKit={pressKit} />

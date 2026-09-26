@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic";
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useGSAP } from "@gsap/react";
 import { gsap } from "@/lib/gsap";
 import type { HeroDto, SiteDto } from "@/lib/content/dto";
@@ -14,6 +14,7 @@ import { MagneticButton } from "@/components/MagneticButton";
 import { scrollToSection } from "@/lib/lenisStore";
 import { track } from "@/lib/analytics";
 import { youTubeBackgroundEmbedUrl } from "@/lib/youtube";
+import { useLocale } from "@/i18n/LocaleProvider";
 
 const HeroCanvas = dynamic(() => import("@/components/three/HeroCanvas"), { ssr: false });
 
@@ -26,6 +27,7 @@ interface HeroProps {
 
 export function Hero({ hero, site }: HeroProps) {
   const { isReady } = useAppReady();
+  const { t, tc } = useLocale();
   const prefersReducedMotion = usePrefersReducedMotion();
   const isDesktop = useMediaQuery("(min-width: 1024px) and (hover: hover) and (pointer: fine)");
   const [sectionRef, isInView] = useInView<HTMLElement>({ threshold: 0 });
@@ -39,10 +41,12 @@ export function Hero({ hero, site }: HeroProps) {
   const youtubeId = prefersReducedMotion ? null : hero.youtubeId;
   const videoUrl = prefersReducedMotion || youtubeId ? null : hero.videoUrl;
   const hasVideoBackground = Boolean(youtubeId || videoUrl);
-  // The WebGL canvas paints the still image over everything — never with a video.
-  const enableWebGL = hero.enableWebgl && isDesktop && !prefersReducedMotion && !hasVideoBackground;
+  // The WebGL canvas paints the still image over everything — never with a
+  // video. Mounted only after the preloader hands off, so its ~240 KB chunk
+  // never competes with the LCP image for bandwidth.
+  const enableWebGL = hero.enableWebgl && isDesktop && !prefersReducedMotion && !hasVideoBackground && isReady;
   const headlineLines = hero.headlineLines.length > 0 ? hero.headlineLines : [site.artistName];
-  const eyebrow = hero.eyebrow ?? site.roles.join(" · ");
+  const eyebrow = hero.eyebrow ? tc(hero.eyebrow) : site.roles.map(tc).join(" · ");
 
   // Same-origin, optimized (avoids a cross-origin WebGL texture fetch, which
   // would fail CORS/taint the canvas once backgroundUrl is a Supabase URL —
@@ -51,29 +55,52 @@ export function Hero({ hero, site }: HeroProps) {
     ? backgroundUrl
     : `/_next/image?url=${encodeURIComponent(backgroundUrl)}&w=1920&q=75`;
 
+  // Entrance. Initial states are applied on mount — the preloader covers the
+  // page until then — and the sequence plays when the preloader's mask opens.
   useGSAP(
     () => {
-      if (!isReady || hasPlayedRef.current || !sectionRef.current) return;
+      if (!sectionRef.current || hasPlayedRef.current) return;
+
+      // Reduced motion can resolve after hydration — undo any hidden state.
+      if (prefersReducedMotion) {
+        gsap.set(".hero-line, .hero-sub, .hero-cta, .hero-scroll-cue, .hero-deco", { clearProps: "transform,opacity,visibility" });
+        return;
+      }
+
+      if (!isReady) {
+        gsap.set(".hero-line", { yPercent: 110, y: 0 });
+        gsap.set(".hero-sub, .hero-cta, .hero-scroll-cue, .hero-deco", { autoAlpha: 0 });
+        return;
+      }
       hasPlayedRef.current = true;
 
-      // .hero-frame holds the real LCP <Image> — it must stay visible (opacity)
-      // from first paint; only its scale animates, so the image never gets
-      // hidden behind the preloader and re-revealed (that would delay LCP).
+      // .hero-frame holds the real LCP <Image> — it stays visible (opacity)
+      // from first paint; only its scale animates, so LCP is never delayed.
       const tl = gsap.timeline({ defaults: { ease: "expo.out" } });
-      tl.fromTo(".hero-frame", { scale: 1.12 }, { scale: 1, duration: 1.6 })
-        .fromTo(".hero-line", { yPercent: 110 }, { yPercent: 0, duration: 1.1, stagger: 0.08 }, "-=1.1")
-        .fromTo(".hero-sub", { autoAlpha: 0, y: 16 }, { autoAlpha: 1, y: 0, duration: 0.8 }, "-=0.5")
-        .fromTo(".hero-cta", { autoAlpha: 0, y: 12 }, { autoAlpha: 1, y: 0, duration: 0.6, stagger: 0.08 }, "-=0.4")
-        .fromTo(".hero-scroll-cue", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.6 }, "-=0.2");
+      tl.fromTo(".hero-frame", { scale: 1.14 }, { scale: 1, duration: 2.2 }, 0)
+        // ALAN → SAHER, each rising out of its own mask
+        .fromTo(".hero-line", { yPercent: 110, y: 0 }, { yPercent: 0, duration: 1.3, stagger: 0.14 }, 0.45)
+        .fromTo(".hero-sub", { autoAlpha: 0, y: 14 }, { autoAlpha: 1, y: 0, duration: 0.9 }, 1.0)
+        .fromTo(".hero-cta", { autoAlpha: 0, y: 14 }, { autoAlpha: 1, y: 0, duration: 0.8, stagger: 0.1 }, 1.2)
+        .fromTo(".hero-deco", { autoAlpha: 0 }, { autoAlpha: 1, duration: 1.2, ease: "power2.out" }, 1.35)
+        .fromTo(".hero-scroll-cue", { autoAlpha: 0, y: 10 }, { autoAlpha: 1, y: 0, duration: 0.8 }, 1.5);
     },
-    { scope: sectionRef, dependencies: [isReady] }
+    { scope: sectionRef, dependencies: [isReady, prefersReducedMotion] }
   );
 
-  useEffect(() => {
-    if (prefersReducedMotion && sectionRef.current) {
-      gsap.set(".hero-frame, .hero-line, .hero-sub, .hero-cta, .hero-scroll-cue", { autoAlpha: 1, yPercent: 0, y: 0, scale: 1 });
-    }
-  }, [prefersReducedMotion, sectionRef]);
+  // Depth on scroll: background drifts slower than the page, the decorative
+  // layer faster, the headline keeps native speed and only dims.
+  useGSAP(
+    () => {
+      const section = sectionRef.current;
+      if (!section || prefersReducedMotion) return;
+      const scrub = { trigger: section, start: "top top", end: "bottom top", scrub: true };
+      gsap.to(".hero-parallax", { yPercent: isDesktop ? 16 : 10, ease: "none", scrollTrigger: scrub });
+      gsap.to(".hero-deco-layer", { yPercent: -60, ease: "none", scrollTrigger: scrub });
+      gsap.to(".hero-content", { autoAlpha: 0.15, ease: "power1.in", scrollTrigger: { ...scrub, start: "30% top" } });
+    },
+    { scope: sectionRef, dependencies: [prefersReducedMotion, isDesktop], revertOnUpdate: true }
+  );
 
   return (
     <section
@@ -81,7 +108,7 @@ export function Hero({ hero, site }: HeroProps) {
       ref={sectionRef}
       className="relative flex h-[100svh] min-h-[640px] w-full items-end overflow-hidden bg-bg"
     >
-      <div className="absolute inset-0">
+      <div className="hero-parallax absolute inset-0 will-change-transform">
         <div className="hero-frame absolute inset-0">
           <Image
             src={backgroundUrl}
@@ -130,45 +157,60 @@ export function Hero({ hero, site }: HeroProps) {
         </div>
       </div>
 
-      <div className="container-edit relative z-10 w-full pb-16 md:pb-24">
-        <p className="hero-sub mb-4 text-xs uppercase tracking-[0.3em] text-fg-muted">{eyebrow}</p>
+      {/* Decorative depth layer — moves faster than the page on scroll. */}
+      <div aria-hidden="true" className="hero-deco-layer pointer-events-none absolute inset-0 z-[5] hidden md:block">
+        <div className="hero-deco absolute right-[var(--gutter)] top-[22%] flex flex-col items-end gap-3 text-right">
+          <span className="h-16 w-px bg-accent/60" />
+          <span className="eyebrow">{t.origin}</span>
+          <span className="eyebrow tabular text-fg/70">Est. {site.startYear}</span>
+        </div>
+      </div>
 
-        <h1 className="font-display leading-[0.85] tracking-tight" style={{ fontSize: "var(--font-size-display)" }}>
+      <div className="hero-content container-edit relative z-10 w-full pb-16 md:pb-24">
+        <p className="hero-sub eyebrow mb-5">{eyebrow}</p>
+
+        <h1 className="font-display leading-[0.88] tracking-tight" style={{ fontSize: "var(--font-size-display)" }}>
           {headlineLines.map((line, i) => (
-            <span key={i} className="block overflow-hidden">
-              <span className="hero-line block">{line}</span>
+            <span key={i} className="line-mask">
+              <span className="hero-line">{line}</span>
             </span>
           ))}
         </h1>
 
-        <div className="mt-8 flex flex-wrap items-center gap-x-10 gap-y-4">
-          <MagneticButton className="hero-cta" cursorVariant="view">
+        <div className="mt-8 flex flex-wrap items-center gap-x-10 gap-y-2">
+          <MagneticButton className="hero-cta" cursorVariant="go" strength={0.22}>
             <button
               onClick={() => scrollToSection(hero.primaryCtaTarget)}
-              className="group flex items-center gap-2 text-xs uppercase tracking-[0.25em]"
+              className="group flex min-h-11 items-center gap-3 py-3 text-xs uppercase tracking-[0.25em]"
             >
-              {hero.primaryCtaLabel}
-              <span className="h-px w-8 bg-fg/60 transition-all duration-300 group-hover:w-12 group-hover:bg-accent" />
+              <span className="text-roll" data-text={tc(hero.primaryCtaLabel)}>
+                <span>{tc(hero.primaryCtaLabel)}</span>
+              </span>
+              <span className="h-px w-8 origin-left bg-fg/60 transition-transform duration-500 ease-[var(--ease-out-expo)] group-hover:scale-x-150 group-hover:bg-accent" />
             </button>
           </MagneticButton>
-          <MagneticButton className="hero-cta" cursorVariant="view">
+          <MagneticButton className="hero-cta" cursorVariant="go" strength={0.22}>
             <button
               onClick={() => {
                 track("hero_booking_click");
                 scrollToSection(hero.secondaryCtaTarget);
               }}
-              className="group flex items-center gap-2 text-xs uppercase tracking-[0.25em] text-accent"
+              className="group flex min-h-11 items-center gap-3 py-3 text-xs uppercase tracking-[0.25em] text-accent"
             >
-              {hero.secondaryCtaLabel}
-              <span className="h-px w-8 bg-accent/60 transition-all duration-300 group-hover:w-12" />
+              <span className="text-roll" data-text={tc(hero.secondaryCtaLabel)}>
+                <span>{tc(hero.secondaryCtaLabel)}</span>
+              </span>
+              <span className="h-px w-8 origin-left bg-accent/60 transition-transform duration-500 ease-[var(--ease-out-expo)] group-hover:scale-x-150" />
             </button>
           </MagneticButton>
         </div>
       </div>
 
       <div className="hero-scroll-cue absolute bottom-8 right-[var(--gutter)] z-10 hidden items-center gap-3 md:flex">
-        <span className="text-[10px] uppercase tracking-[0.3em] text-fg-muted">Scroll</span>
-        <span className="h-10 w-px animate-pulse bg-fg-muted/50" />
+        <span className="text-[10px] uppercase tracking-[0.3em] text-fg-muted">{t.scroll}</span>
+        <span className="relative block h-12 w-px overflow-hidden bg-fg/15">
+          <span className="scroll-cue-line absolute inset-0 bg-fg/70" />
+        </span>
       </div>
     </section>
   );

@@ -9,24 +9,29 @@ interface MagneticButtonProps {
   children: ReactNode;
   className?: string;
   strength?: number;
-  cursorVariant?: "view" | "play" | "drag";
+  cursorVariant?: "view" | "play" | "drag" | "go" | "open";
 }
 
 /** Wraps its child in a subtle magnetic-pull hover effect. Desktop (fine pointer) only. */
-export function MagneticButton({ children, className, strength = 0.35, cursorVariant }: MagneticButtonProps) {
+export function MagneticButton({ children, className, strength = 0.25, cursorVariant }: MagneticButtonProps) {
   const ref = useRef<HTMLDivElement>(null);
   const isFinePointer = useMediaQuery("(hover: hover) and (pointer: fine)");
 
   useGSAP(
     () => {
       const el = ref.current;
-      if (!el || !isFinePointer) return;
+      if (!el || !isFinePointer || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
       const quickX = gsap.quickTo(el, "x", { duration: 0.5, ease: "power3.out" });
       const quickY = gsap.quickTo(el, "y", { duration: 0.5, ease: "power3.out" });
 
+      // Measured once per hover, not per pointermove (avoids forced layout on every event).
+      let rect = el.getBoundingClientRect();
+      const handleEnter = () => {
+        rect = el.getBoundingClientRect();
+      };
+
       const handleMove = (event: PointerEvent) => {
-        const rect = el.getBoundingClientRect();
         const relX = event.clientX - (rect.left + rect.width / 2);
         const relY = event.clientY - (rect.top + rect.height / 2);
         quickX(relX * strength);
@@ -38,9 +43,11 @@ export function MagneticButton({ children, className, strength = 0.35, cursorVar
         quickY(0);
       };
 
+      el.addEventListener("pointerenter", handleEnter);
       el.addEventListener("pointermove", handleMove);
       el.addEventListener("pointerleave", handleLeave);
       return () => {
+        el.removeEventListener("pointerenter", handleEnter);
         el.removeEventListener("pointermove", handleMove);
         el.removeEventListener("pointerleave", handleLeave);
       };

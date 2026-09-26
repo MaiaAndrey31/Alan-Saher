@@ -2,7 +2,7 @@
 
 import { useEffect, type ReactNode } from "react";
 import Lenis from "lenis";
-import { gsap, ScrollTrigger } from "@/lib/gsap";
+import { gsap, ScrollTrigger, requestScrollRefresh } from "@/lib/gsap";
 import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 import { setActiveLenis } from "@/lib/lenisStore";
 
@@ -37,12 +37,13 @@ export function SmoothScrollProvider({ children }: { children: ReactNode }) {
     // Content now arrives from the CMS, so element sizes can change after
     // late-loading images/webfonts settle — re-measure ScrollTrigger once
     // both have finished so pin/scrub start-end points stay accurate.
-    const onWindowLoad = () => ScrollTrigger.refresh();
+    const onWindowLoad = () => requestScrollRefresh();
     window.addEventListener("load", onWindowLoad);
-    document.fonts?.ready.then(() => ScrollTrigger.refresh());
+    document.fonts?.ready.then(requestScrollRefresh);
 
     return () => {
       gsap.ticker.remove(tickerCallback);
+      gsap.ticker.lagSmoothing(500, 33);
       window.removeEventListener("load", onWindowLoad);
       setActiveLenis(null);
       lenis.destroy();
